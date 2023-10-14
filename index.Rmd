@@ -12,3 +12,15 @@ output:
 ## Project thoughts
 
 I am interested in exploring data related to the influence of international organizations on the policy of their member-states. International relations is broadly my area of interest, and I am interested in looking perhaps at  how IOs are a force that can shape state's decision patterns in particular policy domains. 
+
+## Reasearch Question
+I will use the "Correlates of War" Citation: Sarkees, Meredith Reid and Frank Wayman (2010). Resort to War: 1816 – 2007. Washington DC: CQ Press. I will use it to analyze the following research quetion: What was the relation between the Chinese foreign policy alignnment towards the Soviert Union and the balance of power? I hypothesize that the realignment was due to a decrease in the Chinese power and an increase in Russian power. My outcome variable will be a measure of similiarty between the core foreign policy objectives of China aligning with the core policy objectives of the Soviet Union. My explanatory variables will be a combination of military strength and trade relations. If we observe an increase of alignment alongside a increase in relative Soviet power, this would be evidence for my hypothesis. If we observe an increase in the level of alignment without a relative increase in power this would be evidence against my hypothesis. 
+
+```{r}
+library(tidyverse)
+cow <- read_csv("data/cow.csv")
+
+```
+
+
+
