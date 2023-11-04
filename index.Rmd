@@ -36,12 +36,14 @@ Though I have yet to narrow in on a question  below is a data visualization that
 ```{r}
  test <- completeVotes |>  
   group_by(session)|>
-  summarize( votes = mean(me))
+  summarize( votes = sum(hr))
 
 
 test|>ggplot(mapping = aes( x = session,
                          y = votes))+
-  geom_col()
+  geom_col()+
+  labs(x = "Session Number",
+       y = "Number of Votes on Human Rights")
   
   
   
