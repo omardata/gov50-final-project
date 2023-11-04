@@ -43,7 +43,8 @@ test|>ggplot(mapping = aes( x = session,
                          y = votes))+
   geom_col()+
   labs(x = "Session Number",
-       y = "Number of Votes on Human Rights")
+       y = "Number of Votes on Human Rights",
+       title = "Number of Votes per Session on Human Rights")
   
   
   
