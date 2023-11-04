@@ -23,9 +23,10 @@ I will use the "Correlates of War" Citation: Sarkees, Meredith Reid and Frank Wa
 
 
 
-```{r}
+```{r loadata }
 library(tidyverse)
 
+load("~/Desktop/GOV 50/Projects/Final/final_project/data/un_votes.RData") ## 
 
 ```
 
@@ -33,7 +34,18 @@ library(tidyverse)
 Though I have yet to narrow in on a question  below is a data visualization that is going to help oreint me to some of the relevant features of the data set. I have included...  
 
 ```{r}
+ test <- completeVotes |>  
+  group_by(session)|>
+  summarize( votes = mean(me))
 
+
+test|>ggplot(mapping = aes( x = session,
+                         y = votes))+
+  geom_col()
+  
+  
+  
+               
 ```
 
 
