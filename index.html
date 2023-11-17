@@ -115,7 +115,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["~$debook.docx","Codebook.docx","data/cow.csv","data/un_votes.RData","index_files/anchor-4.2.2/anchor.min.js","index_files/bowser-1.9.3/bowser.min.js","index_files/distill-2.2.21/template.v2.js","index_files/figure-html5/unnamed-chunk-1-1.png","index_files/header-attrs-2.17/header-attrs.js","index_files/header-attrs-2.24/header-attrs.js","index_files/jquery-3.6.0/jquery-3.6.0.js","index_files/jquery-3.6.0/jquery-3.6.0.min.js","index_files/jquery-3.6.0/jquery-3.6.0.min.map","index_files/popper-2.6.0/popper.min.js","index_files/tippy-6.2.7/tippy-bundle.umd.min.js","index_files/tippy-6.2.7/tippy-light-border.css","index_files/tippy-6.2.7/tippy.css","index_files/tippy-6.2.7/tippy.umd.min.js","index_files/webcomponents-2.0.0/webcomponents.js","Non-StateWarData_v4.0.csv"]}
+  {"type":"character","attributes":{},"value":["Codebook.docx","data/cow.csv","data/un_votes.RData","index_files/anchor-4.2.2/anchor.min 2.js","index_files/anchor-4.2.2/anchor.min.js","index_files/bowser-1.9.3/bowser.min 2.js","index_files/bowser-1.9.3/bowser.min.js","index_files/distill-2.2.21/template.v2 2.js","index_files/distill-2.2.21/template.v2.js","index_files/figure-html5/unnamed-chunk-1-1.png","index_files/figure-html5/unnamed-chunk-2-1.png","index_files/figure-html5/unnamed-chunk-2-2.png","index_files/header-attrs-2.17/header-attrs.js","index_files/header-attrs-2.24/header-attrs 2.js","index_files/header-attrs-2.24/header-attrs.js","index_files/jquery-3.6.0/jquery-3.6.0 2.js","index_files/jquery-3.6.0/jquery-3.6.0.js","index_files/jquery-3.6.0/jquery-3.6.0.min 2.js","index_files/jquery-3.6.0/jquery-3.6.0.min 2.map","index_files/jquery-3.6.0/jquery-3.6.0.min.js","index_files/jquery-3.6.0/jquery-3.6.0.min.map","index_files/popper-2.6.0/popper.min 2.js","index_files/popper-2.6.0/popper.min.js","index_files/tippy-6.2.7/tippy 2.css","index_files/tippy-6.2.7/tippy-bundle.umd.min 2.js","index_files/tippy-6.2.7/tippy-bundle.umd.min.js","index_files/tippy-6.2.7/tippy-light-border 2.css","index_files/tippy-6.2.7/tippy-light-border.css","index_files/tippy-6.2.7/tippy.css","index_files/tippy-6.2.7/tippy.umd.min 2.js","index_files/tippy-6.2.7/tippy.umd.min.js","index_files/webcomponents-2.0.0/webcomponents 2.js","index_files/webcomponents-2.0.0/webcomponents.js","Non-StateWarData_v4.0.csv"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1520,7 +1520,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <h2 id="project-thoughts">Project thoughts</h2>
 <p>I am interested in exploring data related to the influence of international organizations on the policy of their member-states. International relations is broadly my area of interest, and I am interested in looking perhaps at how IOs are a force that can shape state’s decision patterns in particular policy domains.</p>
 <h2 id="reasearch-question">Reasearch Question</h2>
-<p>I have just recently changed my topic of interest for this final project. It is more in line with the porject thoughts outlined above. I aim to use Eric Voeten’s member-state votes in the United Nations General Assembly.I have yet to refine my research question.</p>
+<p>I have just recently changed my topic of interest for this final project. It is more in line with the porject thoughts outlined above. I aim to use Eric Voeten’s member-state votes in the United Nations General Assembly. I want to explore the extent of</p>
 <p>Below was a research question that I have since rejected and moved on from.</p>
 <p>I will use the “Correlates of War” Citation: Sarkees, Meredith Reid and Frank Wayman (2010). Resort to War: 1816 – 2007. Washington DC: CQ Press. I will use it to analyze the following research quetion: What was the relation between the Chinese foreign policy alignnment towards the Soviet Union and the balance of power? I hypothesize that the realignment was due to a decrease in the Chinese power and an increase in Russian power. My outcome variable will be a measure of similiarty between the core foreign policy objectives of China aligning with the core policy objectives of the Soviet Union. My explanatory variables will be a combination of military strength and trade relations. If we observe an increase of alignment alongside a increase in relative Soviet power, this would be evidence for my hypothesis. If we observe an increase in the level of alignment without a relative increase in power this would be evidence against my hypothesis.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1534,7 +1534,10 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>Though I have yet to narrow in on a question below is a data visualization that is going to help oreint me to some of the relevant features of the data set. I have included…</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span> <span class='va'>test</span> <span class='op'>&lt;-</span> <span class='va'>completeVotes</span> <span class='op'>|&gt;</span>  </span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='va'>test</span> <span class='op'>&lt;-</span> <span class='va'>completeVotes</span> <span class='op'>|&gt;</span>  </span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>session</span><span class='op'>)</span><span class='op'>|&gt;</span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span> votes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>hr</span><span class='op'>)</span><span class='op'>)</span></span>
 <span></span>
@@ -1548,6 +1551,33 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p><img src="index_files/figure-html5/unnamed-chunk-1-1.png" width="624" /></p>
 </div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>proportion_hr</span><span class='op'>&lt;-</span> <span class='va'>completeVotes</span><span class='op'>|&gt;</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>session</span><span class='op'>)</span><span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span> prop_votes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>hr</span><span class='op'>)</span><span class='op'>/</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>me</span>, <span class='va'>nu</span>, <span class='va'>di</span>,<span class='va'>co</span>, <span class='va'>hr</span>, <span class='va'>ec</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>)</span></span>
+<span></span>
+<span> <span class='va'>proportion_hr</span><span class='op'>|&gt;</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>mapping <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span> x <span class='op'>=</span> <span class='va'>session</span>,</span>
+<span>                         y <span class='op'>=</span> <span class='va'>prop_votes</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Session Number"</span>,</span>
+<span>       y <span class='op'>=</span> <span class='st'>"Proportion of Votes on Human Rights"</span>,</span>
+<span>       title <span class='op'>=</span> <span class='st'>"Proportion of Votes per Session on Human Rights"</span><span class='op'>)</span></span></code></pre>
+</div>
+<img src="index_files/figure-html5/unnamed-chunk-2-1.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>state_votes</span> <span class='op'>&lt;-</span> <span class='va'>completeVotes</span><span class='op'>|&gt;</span> </span>
+<span>   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>Country</span>, <span class='va'>session</span><span class='op'>)</span><span class='op'>|&gt;</span> </span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>votes_prop <span class='op'>=</span>  <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>vote</span> <span class='op'>==</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span><span class='op'>|&gt;</span> </span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>Country</span> <span class='op'>==</span> <span class='st'>"USA"</span> <span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>state_votes</span><span class='op'>|&gt;</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>mapping <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>session</span>,</span>
+<span>                                   y <span class='op'>=</span> <span class='va'>votes_prop</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='op'>(</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="index_files/figure-html5/unnamed-chunk-2-2.png" width="624" /></p>
+</div>
+<p>Interpretation<br />
+Because I have only recently decided to focus on state size and voting patters, I am doing some intitial vizualization of how states have voted through time, within each session. The above graph is shows the vote proportion of affirmative votes for the USA through time, and seems to demonstrate a general decrease in the proportion of affirmative votes per session.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

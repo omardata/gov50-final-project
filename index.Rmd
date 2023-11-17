@@ -14,7 +14,7 @@ output:
 I am interested in exploring data related to the influence of international organizations on the policy of their member-states. International relations is broadly my area of interest, and I am interested in looking perhaps at  how IOs are a force that can shape state's decision patterns in particular policy domains. 
 
 ## Reasearch Question
-I have just recently changed my topic of interest for this final project. It is more in line with the porject thoughts outlined above. I aim to use Eric Voeten's member-state votes in the United Nations General Assembly.I have yet to refine my research question. 
+I have just recently changed my topic of interest for this final project. It is more in line with the porject thoughts outlined above. I aim to use Eric Voeten's member-state votes in the United Nations General Assembly. I want to explore the extent of 
 
 
 Below was a research question that I have since rejected and moved on from.
@@ -34,7 +34,10 @@ load("~/Desktop/GOV 50/Projects/Final/final_project/data/un_votes.RData") ##
 Though I have yet to narrow in on a question  below is a data visualization that is going to help oreint me to some of the relevant features of the data set. I have included...  
 
 ```{r}
- test <- completeVotes |>  
+library(tidyverse)
+
+
+test <- completeVotes |>  
   group_by(session)|>
   summarize( votes = sum(hr))
 
@@ -50,5 +53,36 @@ test|>ggplot(mapping = aes( x = session,
   
                
 ```
+
+```{r}
+proportion_hr<- completeVotes|> group_by(session)|>
+  summarize( prop_votes = sum(hr)/(sum(me, nu, di,co, hr, ec)) )
+
+ proportion_hr|>ggplot(mapping = aes( x = session,
+                         y = prop_votes))+
+  geom_col()+
+  labs(x = "Session Number",
+       y = "Proportion of Votes on Human Rights",
+       title = "Proportion of Votes per Session on Human Rights")
+  
+ 
+state_votes <- completeVotes|> 
+   group_by(Country, session)|> 
+  summarize(votes_prop =  mean(vote ==1))|> 
+  filter(Country == "USA" )
+
+state_votes|> ggplot(mapping = aes(x = session,
+                                   y = votes_prop))+
+  geom_col()
+```
+
+
+
+
+
+Interpretation  
+ Because I have only recently decided to focus on state size and voting patters, I am doing some intitial vizualization of how states have voted through time, within each session. The above graph is shows the vote proportion of affirmative votes for the USA through time, and seems to demonstrate a general decrease in the proportion of affirmative votes per session. 
+ 
+
 
 
