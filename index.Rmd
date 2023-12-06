@@ -9,23 +9,29 @@ output:
 
 
 
-## Project thoughts
 
-I am interested in exploring data related to which state-level attributes contribute to member-state voting patterns in international organizations. International relations is broadly my area of interest, and I am interested in looking perhaps at how features such as a state vote in the UNGA compares to that of the US under either democratic or republican leadership.
+## 1 Introduction, Reasearch Question, Hypthesis
 
-## Reasearch Question
-I will use Eric Voeten's member-state votes in the United Nations General Assembly. I will explore differences between UNGA voting in the periods of Carter to Obama. 
+I am interested in exploring data related to which state-level attributes contribute to member-state voting patterns in international organizations. International relations is broadly my area of interest, and I am interested in looking there is higher or lower voting coincidence with the US, whether under either democratic or republican leadership.
+
+The question is really this, what is the difference between voting  alignment with the US stance under republican or democratic administrations? 
+
+My hypothesis is that under democratic presidents we will see an increase in voting alignment than under republican administrations.
+
+The null hypothesis is that there is no significant difference between the measure of US-voting coincidence and the adminstration under which that coincidence is calculated.
 
 
-The question is really this,  which attributes of a state do we see greater having a greater UNGA voting alignment with the US stance? How can we use state size, GDP, etc as things that can explain the UNGA voting.
 
-My hypothesis is that for countries with a lower GDP we will see less voting alignment, and that for those from a higher GDP we will see a higher voting alignment. 
+
+## 2 Data Section
+I will use Eric Voeten's member-state votes in the United Nations General Assembly. I will explore differences between UNGA voting in the periods of Carter to Obama.
 
 My variable of interest is the measure of US alignment in the UNGA.
 My explanatory variable is whether or not there is a Republican or Democrat in the White House. 
 
 I will cover the years from the Cater Administration until the Obama Administration. 
 
+This dataset needs to be altered in order to account for which administration votes occurred in. I also need to assign weights in order to calculate voting coincidence.
 
 ```{r loadata, echo = FALSE}
 library(tidyverse)
@@ -51,7 +57,7 @@ completeVotes|> summary()
 
 ```
 
-## Prepping Data
+### 2.1 Preparing Data
 ```{r}
 ## Editing Dates on President's to Match UNGA Votes Format 
 presidents <- presidents |> 
@@ -121,10 +127,30 @@ cart <- cart|>
                              vote %in% c("2", "8") & us_vote %in% c("1", "2") ~ .5))
 
 View(cart)
+## Getting ATE per Country 
+per_country_party <- cart|> 
+  group_by(Country, party)|> 
+  summarize(mean_country_coin = mean(weight_coin_us, na.rm = TRUE))|>
+  pivot_wider(names_from = party,
+              values_from = mean_country_coin)|>
+  mutate( ate = `Democrat` - `Republican`)
+  
+View(per_country_party)
+
+
+
+
 
 ```
 
+### 2.3 Dependent and independent variable 
+
+
+
+
+
 ## Running Calculations of Coincidence Means
+
 ```{r}
 ##Counting Number of Votes Total by Party
 cart |> group_by(party)|>
