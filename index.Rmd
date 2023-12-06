@@ -137,6 +137,16 @@ cart|> group_by(president)|>
 summarize(mean_coin = mean(weight_coin_us, na.rm = TRUE))
 
 
+##Maybe remove the israel votes? See if there is a difference? Or maybe look at the G6 coincidence...
+##Maybe look at who votes in line with the US most often?
+
+cart|> group_by(Country, party)|>
+  summarize(mean_coin_country = mean(weight_coin_us, na.rm = TRUE))|>
+  pivot_wider(names_from = party, 
+              values_from = mean_coin_country)|>
+  mutate(ate = `Democrat` - `Republican`)|>
+  ggplot(mapping = aes( y = ate))+
+  geom_histogram()
 ```
 
 
