@@ -14,75 +14,154 @@ output:
 I am interested in exploring data related to the influence of international organizations on the policy of their member-states. International relations is broadly my area of interest, and I am interested in looking perhaps at  how IOs are a force that can shape state's decision patterns in particular policy domains. 
 
 ## Reasearch Question
-I have just recently changed my topic of interest for this final project. It is more in line with the porject thoughts outlined above. I aim to use Eric Voeten's member-state votes in the United Nations General Assembly. I want to explore the extent of 
+I aim to use Eric Voeten's member-state votes in the United Nations General Assembly. I will explore differences between UNGA voting under the US Democratic and Republican administrations. The question is really this, under which administrations did we see the greatest UNGA alignment with the US stance? My hypothesis is that under the Republican Administrations we saw less voting alignment, and under democratic leadership we saw greater alignment. 
+
+My variable of interest is the measure of US alignment in the UNGA.
+My explanatory variable is whether or not there is a Republican or Democrat in the White House. 
 
 
-Below was a research question that I have since rejected and moved on from.
-
-I will use the "Correlates of War" Citation: Sarkees, Meredith Reid and Frank Wayman (2010). Resort to War: 1816 – 2007. Washington DC: CQ Press. I will use it to analyze the following research quetion: What was the relation between the Chinese foreign policy alignnment towards the Soviet Union and the balance of power? I hypothesize that the realignment was due to a decrease in the Chinese power and an increase in Russian power. My outcome variable will be a measure of similiarty between the core foreign policy objectives of China aligning with the core policy objectives of the Soviet Union. My explanatory variables will be a combination of military strength and trade relations. If we observe an increase of alignment alongside a increase in relative Soviet power, this would be evidence for my hypothesis. If we observe an increase in the level of alignment without a relative increase in power this would be evidence against my hypothesis. 
+I will cover the years from the Cater Administration until the Obama Administration. 
 
 
-
-```{r loadata }
+```{r loadata, echo = FALSE}
 library(tidyverse)
+library(dplyr)
+install.packages("lubridate")
+library(lubridate)
 
 load("~/Desktop/GOV 50/Projects/Final/final_project/data/un_votes.RData") ## 
 
+ideal <-  read.csv("data/IdealpointestimatesAll_Jul2023.csv")
+lead <- read_dta("data/WhyLeadersFightLEADDataset_updated.dta")
+presidents <- read.csv("data/presidents.csv")
+
+presidents <- presidents|>
+  select(Presidency, President, Took.office, Left.office, Party)
+
+View(ideal)
+View(completeVotes)
+View(presidents)
+## Create the presidents tibble for dates. 
+
+
+completeVotes|> summary()
+
+
 ```
 
-## Data Visualization 
-Though I have yet to narrow in on a question  below is a data visualization that is going to help oreint me to some of the relevant features of the data set. I have included...  
+## Prepping Data
 
 ```{r}
-library(tidyverse)
+## Editing Dates on President's to Match UNGA Votes Format 
+presidents <- presidents |> 
+  mutate(left_office = as.Date(Left.office, format = "%d/%m/%Y"),
+         took_office = as.Date(Took.office, format = "%d/%m/%Y"))
 
 
-test <- completeVotes |>  
-  group_by(session)|>
-  summarize( votes = sum(hr))
+View(carter_obama)
+##Subset UN Data, want only carter to Obama Votes
+carter_obama <- completeVotes|>
+  filter( date > "1977-01-19" & date < "2017-01-21") ## needed to use just greater or lesser than
 
+##Assigning Presidency, Rep or Dem, and also president identifier 1 for carter, 2 for reagan etc 
+rep_dates <- select( sf)
 
-test|>ggplot(mapping = aes( x = session,
-                         y = votes))+
-  geom_col()+
-  labs(x = "Session Number",
-       y = "Number of Votes on Human Rights",
-       title = "Number of Votes per Session on Human Rights")
+carter_obama|>
+    mutate()
   
+
   
-  
-               
+filter_by_time(.data, .date_var, .start_date = "start", .end_date = "end")
+
+completeVotes|> summary()
+
+carter_obama
+
+View(carter_obama)
 ```
+
+
 
 ```{r}
-proportion_hr<- completeVotes|> group_by(session)|>
-  summarize( prop_votes = sum(hr)/(sum(me, nu, di,co, hr, ec)) )
+completeVotes |> filter (importantvote ==1, year >= 2018) 
+```
 
- proportion_hr|>ggplot(mapping = aes( x = session,
-                         y = prop_votes))+
-  geom_col()+
-  labs(x = "Session Number",
-       y = "Proportion of Votes on Human Rights",
-       title = "Proportion of Votes per Session on Human Rights")
-  
- 
-state_votes <- completeVotes|> 
-   group_by(Country, session)|> 
-  summarize(votes_prop =  mean(vote ==1))|> 
-  filter(Country == "USA" )
 
-state_votes|> ggplot(mapping = aes(x = session,
-                                   y = votes_prop))+
-  geom_col()
+```{r}
+# Testing trump 
+votes_trump<- completeVotes|>
+  filter(year >= 2017)|>
+  group_by(rcid)|> 
+  summarize(mean = mean(vote ==1) )
+
+votes_trump
+
+View(completeVotes)
+
+unique(completeVotes$year)
+votes_trump|> summarize(mean = mean(mean))
+
+
+votes_obama <- completeVotes|>
+  filter(year < 2017 & year>2008)|>
+  group_by(rcid)|> 
+  summarize(mean = mean(vote ==1) )
+votes_obama|> summarize (mean = mean(mean))
+
+
+  group_by(rcid)|>
+  summarize(mean_yes = mean(vote == 1))|>
+  ggplot( mapping = aes( x =mean_yes))+
+  geom_histogram(binwidth = .05)
+
+
+
+
+
+## From LEAD data
+lead_trump<- lead |> filter(year >= 2019)
+lead
+unique(lead_post1975$idacr)
+
+
+
 ```
 
 
 
 
 
-Interpretation  
- Because I have only recently decided to focus on state size and voting patters, I am doing some intitial vizualization of how states have voted through time, within each session. The above graph is shows the vote proportion of affirmative votes for the USA through time, and seems to demonstrate a general decrease in the proportion of affirmative votes per session. 
+
+## Scrap Writing
+
+
+
+I want to explore the extent to which there is state agreement on certain votes? 
+The effect of something on voting coincidence in a particular time period and in a particular topic? 
+
+The effect of political turn-over in the UNGA voting coincidence?
+The role of leaders?
+The role of some country-level feature?
  
+ 
+Do small states agree more, do large states disagree more?
+Democratic or Republican presidents at the UN?
+Are there any statistical differences?
 
 
+
+Which subset of states? 
+Which votes, how to measure voting coincidence. Mutate,and create new variable that states coindidence or no coindidence. There are 
+
+Domestic Turn-over, or... international factors.. 
+
+ 
+What are valid and easy paper topics?
+I just need either an easy GOV 50 paper, or an easy overlap between the GOV 50 paper and the UN paper. 
+
+Do work on the UN paper first. Maybe whether or not there is an overlap. 
+
+
+Can also just do a single-time analysis. 
+Need something to test about the countries. '
 
