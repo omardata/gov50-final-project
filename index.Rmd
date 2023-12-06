@@ -57,18 +57,59 @@ presidents <- presidents |>
   mutate(left_office = as.Date(Left.office, format = "%d/%m/%Y"),
          took_office = as.Date(Took.office, format = "%d/%m/%Y"))
 
+## Vote data to correct date format
+completeVotes2 <- completeVotes|> mutate(
+  date = as.Date(date, format = "%Y-%m-%d"))
+
+View(completeVotes2)
+
+##Subset UN Data, want only carter to Obama Votes
+carter_obama <- completeVotes2|>
+  filter( date > "1977-01-20" & date < "2017-01-20") ## needed to use just greater or lesser than
 
 View(carter_obama)
-##Subset UN Data, want only carter to Obama Votes
-carter_obama <- completeVotes|>
-  filter( date > "1977-01-19" & date < "2017-01-21") ## needed to use just greater or lesser than
 
-##Assigning Presidency, Rep or Dem, and also president identifier 1 for carter, 2 for reagan etc 
-rep_dates <- select( sf)
+##creating vector of democrat presidents 
+democratic_indiators <- c("1", "4", "6")
 
-carter_obama|>
-    mutate()
+##Assigning Presidency, Rep or Dem, and also president identifier 1 for carter, 2 for Reagan etc 
+cart <- carter_obama|>
+    mutate(pres_indicator = case_when( (date > "1977-01-20" & date < "1981-01-20") ~ "1",
+                                       (date > "1981-01-20" & date < "1989-01-20") ~ "2",
+                                       (date > "1989-01-20" & date < "1993-01-20") ~ "3",
+                                       (date > "1993-01-20" & date < "2001-01-20") ~ "4",
+                                       (date > "2001-01-20" & date < "2009-01-20") ~ "5",
+                                       (date > "2009-01-20" & date < "2017-01-20") ~ "6")
+           )|>
+  mutate(democrat = if_else(pres_indicator %in% democratic_indiators, "1", "0"))|>
+  mutate(party = if_else(democrat == 1, "Democrat", "Republican"))|>
+  mutate(president = case_when(pres_indicator == 1 ~ "Jimmy Carter",
+                               pres_indicator == 2 ~ "Ronald Reagan",
+                               pres_indicator == 3 ~ "George H. W. Bush",
+                               pres_indicator == 4 ~ "Bill Clinton",
+                               pres_indicator == 5 ~ "George W. Bush",
+                               pres_indicator == 6 ~ "Barack Obama")
+  )
+
+View(cart)
+
+
+
+
+
+cart <- carter_obama|>
+    mutate(pres_indicator = case_when( (date > `1977-01-20` & date < `1981-01-20`) ~ "1",
+                                       (date > `1981-01-20` & date < `1989-01-20`) ~ "2",
+                                       (date > `1989-01-20` & date < `1993-01-20`) ~ "3",
+                                       (date > `1993-01-20` & date < `2001-01-20`) ~ "4",
+                                       (date > `2001-01-20` & date < `2009-01-20`) ~ "5",
+                                       (date > `2009-01-20` & date < `2017-01-20`) ~ "6"
+           ))
   
+
+carter_obama|> mutate(
+  
+)
 
   
 filter_by_time(.data, .date_var, .start_date = "start", .end_date = "end")
