@@ -104,39 +104,39 @@ cart <- cart |>
   left_join(us_votes, by = join_by(rcid))
 
 
-
 ## Adding Indicator of Voting With US or Not 
 cart <- cart|> 
   mutate(coin_us = case_when((vote == 1 & us_vote == 1) | (vote ==3 & us_vote ==3) ~"Both Affirm/Deny",
                               vote %in% c("2","8") & us_vote %in% c("2","8") ~"Both Abstain/Absent",
                               (vote == 1 & us_vote ==2) | (vote == 2 & us_vote == 1) ~"Contra",
                              vote %in% c("2", "8") & us_vote %in% c("1", "2") ~ "Mixed"))
-                             
-                                    
-                                   
 
-
-
-#> Joining with `by = join_by(carrier)`
-
+## Assigning Weights 
+cart <- cart|> 
+  mutate(weight_coin_us = case_when((vote == 1 & us_vote == 1) | (vote ==3 & us_vote ==3) ~ 1,
+                              vote %in% c("2","8") & us_vote %in% c("2","8") ~ .5,
+                              (vote == 1 & us_vote ==2) | (vote == 2 & us_vote == 1) ~0,
+                             vote %in% c("2", "8") & us_vote %in% c("1", "2") ~ .5))
 
 View(cart)
 
 ```
 
-
+## Running Calculations of Coincidence Means
 ```{r}
-##Counting Number of Votes Total
+##Counting Number of Votes Total by Party
 cart |> group_by(party)|>
   summarize(total = length(unique(rcid)))
 
+##Mean Coincidence by Party
+cart|> group_by(party)|>
+  summarize(mean_coin = mean(weight_coin_us, na.rm = TRUE))
 
-##Counting Number of Votes US Voted Yes or No in?  
+##Mean Coincidence per President
+cart|> group_by(president)|>
+summarize(mean_coin = mean(weight_coin_us, na.rm = TRUE))
 
 
-
-## Calculating Voting Coincidence 
-cart|> mutate()
 ```
 
 
