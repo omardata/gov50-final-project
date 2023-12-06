@@ -50,7 +50,6 @@ completeVotes|> summary()
 ```
 
 ## Prepping Data
-
 ```{r}
 ## Editing Dates on President's to Match UNGA Votes Format 
 presidents <- presidents |> 
@@ -91,34 +90,43 @@ cart <- carter_obama|>
                                pres_indicator == 6 ~ "Barack Obama")
   )
 
+## Tibble of USA votes
+us_votes <- cart|> 
+  filter(Country == "USA")|>
+  select(rcid, vote)|>
+  mutate(us_vote = vote)|>
+  select(!vote)
+
+View(us_votes)
+
+##Merge with all other votes, to indicate US vote in each row
+cart <- cart |>
+  left_join(us_votes, by = join_by(rcid))
+
+## Adding Indicator of Voting With US or Not 
+cart|> mutate(coin_us = if_else() )
+
+
+#> Joining with `by = join_by(carrier)`
+
+
 View(cart)
 
+```
+
+
+```{r}
+##Counting Number of Votes Total
+cart |> group_by(party)|>
+  summarize(total = length(unique(rcid)))
+
+
+##Counting Number of Votes US Voted Yes or No in?  
 
 
 
-
-cart <- carter_obama|>
-    mutate(pres_indicator = case_when( (date > `1977-01-20` & date < `1981-01-20`) ~ "1",
-                                       (date > `1981-01-20` & date < `1989-01-20`) ~ "2",
-                                       (date > `1989-01-20` & date < `1993-01-20`) ~ "3",
-                                       (date > `1993-01-20` & date < `2001-01-20`) ~ "4",
-                                       (date > `2001-01-20` & date < `2009-01-20`) ~ "5",
-                                       (date > `2009-01-20` & date < `2017-01-20`) ~ "6"
-           ))
-  
-
-carter_obama|> mutate(
-  
-)
-
-  
-filter_by_time(.data, .date_var, .start_date = "start", .end_date = "end")
-
-completeVotes|> summary()
-
-carter_obama
-
-View(carter_obama)
+## Calculating Voting Coincidence 
+cart|> mutate()
 ```
 
 
@@ -154,9 +162,6 @@ votes_obama|> summarize (mean = mean(mean))
   summarize(mean_yes = mean(vote == 1))|>
   ggplot( mapping = aes( x =mean_yes))+
   geom_histogram(binwidth = .05)
-
-
-
 
 
 ## From LEAD data
