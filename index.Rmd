@@ -7,21 +7,19 @@ output:
     self_contained: false
 ---
 
-
-
+Note to self.... Finish a simple analysis.. 
+If there is time later, then come back and edit or add to it. By tonight, a draft that could be submitted. 
+ 
 
 ## 1 Introduction, Reasearch Question, Hypthesis
 
-I am interested in exploring data related to which state-level attributes contribute to member-state voting patterns in international organizations. International relations is broadly my area of interest, and I am interested in looking there is higher or lower voting coincidence with the US, whether under either democratic or republican leadership.
+I am interested in exploring data related to which state-level attributes contribute to member-state voting patterns in international organizations. International relations is broadly my area of interest, and I am interested in looking at when there is higher or lower voting coincidence with the US, whether under either democratic or republican leadership of the United States.
 
 The question is really this, what is the difference between voting  alignment with the US stance under republican or democratic administrations? 
 
-My hypothesis is that under democratic presidents we will see an increase in voting alignment than under republican administrations.
+My hypothesis is that under democratic presidents we will see an increase in voting alignment than under republican administrations. I hypothesize this because ____.
 
-The null hypothesis is that there is no significant difference between the measure of US-voting coincidence and the adminstration under which that coincidence is calculated.
-
-
-
+The null hypothesis is that there is no significant difference between the measure of US-voting coincidence and the administration under which that coincidence is calculated.
 
 ## 2 Data Section
 I will use Eric Voeten's member-state votes in the United Nations General Assembly. I will explore differences between UNGA voting in the periods of Carter to Obama.
@@ -138,12 +136,9 @@ per_country_party <- cart|>
 View(per_country_party)
 
 
-
-
-
 ```
 
-### 2.3 Dependent and independent variable 
+### 2.3 Dependent and Independent Variable 
 
 
 
@@ -183,42 +178,6 @@ completeVotes |> filter (importantvote ==1, year >= 2018)
 ```
 
 
-```{r}
-# Testing trump 
-votes_trump<- completeVotes|>
-  filter(year >= 2017)|>
-  group_by(rcid)|> 
-  summarize(mean = mean(vote ==1) )
-
-votes_trump
-
-View(completeVotes)
-
-unique(completeVotes$year)
-votes_trump|> summarize(mean = mean(mean))
-
-
-votes_obama <- completeVotes|>
-  filter(year < 2017 & year>2008)|>
-  group_by(rcid)|> 
-  summarize(mean = mean(vote ==1) )
-votes_obama|> summarize (mean = mean(mean))
-
-
-  group_by(rcid)|>
-  summarize(mean_yes = mean(vote == 1))|>
-  ggplot( mapping = aes( x =mean_yes))+
-  geom_histogram(binwidth = .05)
-
-
-## From LEAD data
-lead_trump<- lead |> filter(year >= 2019)
-lead
-unique(lead_post1975$idacr)
-
-
-
-```
 
 
 
@@ -258,3 +217,38 @@ Do work on the UN paper first. Maybe whether or not there is an overlap.
 Can also just do a single-time analysis. 
 Need something to test about the countries. '
 
+
+
+```{r}
+# Testing trump 
+votes_trump<- completeVotes|>
+  filter(year >= 2017)|>
+  group_by(rcid)|> 
+  summarize(mean = mean(vote ==1) )
+
+votes_trump
+
+View(completeVotes)
+
+unique(completeVotes$year)
+votes_trump|> summarize(mean = mean(mean))
+
+
+votes_obama <- completeVotes|>
+  filter(year < 2017 & year>2008)|>
+  group_by(rcid)|> 
+  summarize(mean = mean(vote ==1) )
+votes_obama|> summarize (mean = mean(mean))
+
+
+  group_by(rcid)|>
+  summarize(mean_yes = mean(vote == 1))|>
+  ggplot( mapping = aes( x =mean_yes))+
+  geom_histogram(binwidth = .05)
+
+## From LEAD data
+lead_trump<- lead |> filter(year >= 2019)
+lead
+unique(lead_post1975$idacr)
+
+```
