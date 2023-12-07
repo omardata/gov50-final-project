@@ -26,28 +26,33 @@ The null hypothesis is that there any difference between the measure of US-votin
 
 This paper relies on two data sources, one for the dependent variable and one for the independent variable.
 
-My dependent variable, `distance`, is calculated from data of estimated measures of state preference as provided by Dreher et. all 2008. Dreher et all provide a numeric measure of state preference as calculated from United Nations General Assembly Voting Data(the variable `idealpointestimate`). This numeric measure of state-preference is given at a state/session level, that is it provides a single measure of state preference as calculated from United Nations General Assembly Voting Data for a given country in a given year. For a given session the distance of any two ideal-point estimates can be calculated by subtracting the values for two countries. Thus, my dependent variable `distance` is a measure of how aligned a given country is with the US a given session, arrived at by subtracting the value of the a given countries estimate from the USA ideal-point estimate for that year. The value for the US in any given year is zero, because the US displayed voting patterns identical to itself. Therefore a distance of zero means relatively similar voting patterns?
+My dependent variable, `distance`, is calculated from data of estimated measures of state preference as provided by Dreher et. all 2008. Dreher et all provide a numeric measure of state preference as calculated from United Nations General Assembly Voting Data(the variable `idealpointestimate`). This estimate that Dreher et al provide is the result of a statistical model derived from Eric Voeten's data on member-state votes in the United Nations General Assembly.This numeric measure of state-preference is given at a state/session level, that is it provides a single measure of state preference as calculated from United Nations General Assembly Voting Data for a given country in a given year. For a given session the distance of any two ideal-point estimates can be calculated by subtracting the values for two countries. Thus, my dependent variable `distance` is a measure of how aligned a given country is with the US a given session, arrived at by subtracting the value of the a given countries estimate from the USA ideal-point estimate for that year. The value for the US in any given year is zero, because the US displayed voting patterns identical to itself. Therefore a distance of zero means relatively similar voting patterns?
 
-Data for my independent variable, `aid_committment`, is from  AidData’s Core Research Release Version 3.0. This data provides aggregated data (but also, they provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported in __ and is given in constant dollars to  allow for time-series analysis. This variable is also reported at a recipient-year level, meaning that it provides the amount that was committed to a given state in a given year. It includes data from ____ to __ years.  
-
-
-
-
-The data Dreher et al provide is the result of a statistical model derivedfrom Eric Voeten's data on member-state votes in the United Nations General Assembly. Dreher et als  arrive at what they call ideal-point estimates of state preferences. These esimates can be used to derive the  
-
-
-I will explore differences between UNGA voting in the periods of ___. 
-This data will be joined with data from AID, which gives data on bilateral aid commitments as reported by the donor governments. 
-
-The data My variable of interest is the measure of alignment with the USA in the UNGA. The varible that I am using can be calculated from the ideal point estimations that are given by ___. This is a measure of the difference between the USA ideal point and a country's ideal point, for a given session. I have named this variable `distance` and it is what we are trying to explain, for a given country in a given year. The value for the US in a given year is zero, because the US displayed voting patterns identical to itself. Therefore a distance of zero means relatively similar voting patterns?  
-
-My explanatory variable is whether, or how much aid a country receives from the US. This is measured in this study by the amoung of aid that a country has committed to give a country. This is measured in USD.
+Data for my independent variable, `aid_committment`, is from  AidData’s Core Research Release Version 3.0. This data provides aggregated data (but also, they provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported in __ and is given in constant dollars ($USD for 2011) to  allow for time-series analysis. This variable is also reported at a recipient-year level, meaning that it provides the amount that was committed to a given state in a given year.
 
 
 ## Results--------- plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
 
+Plot of Main analysis
+```{r}
+ideal_aid|> filter(!is.na(commitment_amount_usd_constant_sum))|>
+  ggplot(mapping = aes(x = commitment_amount_usd_constant_sum,
+                       y = distance_abs))+
+  geom_point()+
+
+fit <- lm(distance_abs ~ commitment_amount_usd_constant_sum, data = ideal_aid)
+
+summary(fit)
+
+View(fit)
+coef(fit)
+```
 
 
+
+Interpretation of Coeficients 
+
+Stastical Significance?  
 
 
 
@@ -166,8 +171,18 @@ country_amount <-aid_us |>
    summarize(num_countries  = length(unique(country_cown)),
              total_given = sum(commitment_amount_usd_constant_sum)) 
   
+
+
+aid_us |>
+  ggplot(mapping = aes(x = as.factor(year_match),
+                               y = commitment_amount_usd_constant_sum) )+
+  geom_boxplot()+
+  scale_y_log10()
+  
+  
+  
 country_amount|>
-  ggplot(mapping = aes(x = year_match,
+  ggplot(mapping = aes(x = as.factor(year_match),
                        y = num_countries))+
   geom_line()
 
