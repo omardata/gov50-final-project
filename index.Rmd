@@ -35,7 +35,9 @@ This dataset needs to be altered in order to account for which administration vo
 library(tidyverse)
 library(dplyr)
 install.packages("lubridate")
+install.packages("countrycode")
 library(lubridate)
+library(countrycode)
 
 load("~/Desktop/GOV 50/Projects/Final/final_project/data/un_votes.RData") ## 
 
@@ -126,6 +128,7 @@ cart <- cart|>
 
 View(cart)
 
+
 ## Getting ATE per Country 
 per_country_party <- cart|> 
   group_by(Country, party)|> 
@@ -137,7 +140,93 @@ per_country_party <- cart|>
 View(per_country_party)
 
 
+
 ```
+
+## Ideal Points  
+```{r}
+## Can use a countries ideal point estimate? 
+## Can use a fraction of the voting decisions? Maybe use the ideal points first, if time think about the raw voting data
+View(ideal)
+
+## Adding year from session 
+ideal <- ideal|> mutate( country_cowc = countrycode(ccode, origin = 'cown' , destination = 'cowc'),
+                         country_cown = ccode,
+                         year_match = session + 1945)
+## W/O USA
+ideal|> group_by(country_cown, year_match)|>
+  select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
+  filter(!country_cown == 2)
+
+## 
+```
+
+
+###Prepping Aid Data 
+```{r}
+## This is the aggregated data, can choose to use thes disaggregated later, if time 
+aid <- read.csv("data/AidDataCoreDonorRecipientYear_ResearchRelease_Level1_v3.0.csv")
+aid
+## Got correct number of row? Yes. 
+
+View(aid_us)
+
+##gives data from 1973 to 2013 
+aid_us <- aid|>
+  filter(donor == "United States")
+
+##Change from  recepient name to COW character country code, add COW numeric code for matching w Ideal point data
+aid_us <- aid_us|> mutate( country = countrycode(recipient, origin = 'country.name', destination = 'cowc'))
+aid_us <- aid_us|> mutate( country_cown = countrycode(country, origin = 'cowc', destination = 'cown'))
+
+aid_us_test <- aid_us |> filter(is.na(country_cown))
+
+## Testing Names, there are no names that are ambigously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
+unique(aid_us_test$recipient)
+unique_names <- unique(cart$Countryname)
+unique_names <- enframe(unique_names)
+View(unique_names)
+cart|> filter(Countryname == "Serbia")
+
+## Aid US, changing date, minus on year. In order to use previous year's aid commitments
+aid_us <- aid_us |> mutate(year_match = year -1)
+
+View(aid_us)
+
+View(ideal)
+
+```
+
+## Merging Aid and UN Data 
+```{r}
+View(ideal)
+View(aid_us)
+
+##Checking that UN is unique? Good. 
+aid_us|>
+  count(country_cown, year_match) |>
+  filter(n > 1)
+
+## Remove data for country_cown is N/A
+aid_us <-  aid_us|>filter(!is.na(country_cown))
+
+## Check that ideal point is unique
+aid_us|>
+  count(country_cown, year_lagged) |>
+  filter(n > 1)
+
+
+vote_join_aid <- completeVotes|> left_join()
+
+
+
+
+```
+
+
+
+
+
 
 ### 2.3 Dependent and Independent Variable 
 
