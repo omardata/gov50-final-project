@@ -12,20 +12,23 @@ If there is time later, then come back and edit or add to it. By tonight, a draf
  
 
 ## 1 Introduction, Reasearch Question, Hypthesis
+International relations is broadly my area of interest. I am interested in exploring data related to which state-level attributes contribute to member-state voting patterns in international organizations. For this project I would like to look at when there is higher or lower voting coincidence with the US. 
 
-I am interested in exploring data related to which state-level attributes contribute to member-state voting patterns in international organizations. International relations is broadly my area of interest, and I am interested in looking at when there is higher or lower voting coincidence with the US, whether under either democratic or republican leadership of the United States.
+The question is really this, what is the difference between voting  alignment with the US stances depending on other state characteristics. 
 
-The question is really this, what is the difference between voting  alignment with the US stance under republican or democratic administrations? 
+My hypothesis is that we can use aid as a measure. There are  
 
-My hypothesis is that under democratic presidents we will see an increase in voting alignment than under republican administrations. I hypothesize this because ____.
-
-The null hypothesis is that there is no significant difference between the measure of US-voting coincidence and the administration under which that coincidence is calculated.
+The null hypothesis is that there is no significant difference between the measure of US-voting coincidence and the amount of aid that a country receives. 
 
 ## 2 Data Section
 
-I will use Eric Voeten's member-state votes in the United Nations General Assembly. I will explore differences between UNGA voting in the periods of Carter to Obama.
+I will use Eric Voeten's member-state votes in the United Nations General Assembly, and derived from it  by __ to arrive at ideal-point estimates of state preferences in the UN. I will explore differences between UNGA voting in the periods of ___. 
+This data will be joined with data from AID, which gives data on bilateral aid commitments as reported by the donor governements. 
 
-My variable of interest is the measure of US alignment in the UNGA.
+My variable of interest is the measure of US alignment in the UNGA. The varible that I am using can be calculated from the ideal point estimations that are given by ___. This is a measure of the difference between the USA ideal point and a country's ideal point, for a given session. In this given session there is 
+
+
+
 My explanatory variable is whether or not there is a Republican or Democrat in the White House. 
 
 I will cover the years from the Cater Administration until the Obama Administration. 
@@ -179,10 +182,13 @@ ideal_aid <- ideal|>
   left_join(aid_us, join_by(country_cown, year_match))
 View(ideal_aid)
 
-ideal_aid |> 
+ideal_aid |>filter(year_match > 1990,
+                   commitment_amount_usd_constant_sum >1000000)|>
   ggplot(mapping = aes(x = commitment_amount_usd_constant_sum, 
                                   y = distance))+
   geom_point()
+
+## Do ideal points need to be centered? 
 
 ```
 
