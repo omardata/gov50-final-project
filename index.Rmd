@@ -11,29 +11,55 @@ Note to self.... Finish a simple analysis..
 If there is time later, then come back and edit or add to it. By tonight, a draft that could be submitted. 
  
 
-## 1 Introduction, Reasearch Question, Hypthesis
-International relations is broadly my area of interest. I am interested in exploring data related to which state-level attributes contribute to member-state voting patterns in international organizations. For this project I would like to look at when there is higher or lower voting coincidence with the US. 
+## 1 Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs) 
+In this paper I will data relating voting patterns in international organizations to the level of aid that a country receives from the USA. I will look at how well a state's level of aid from the USA can explain that state's level of voting coincidence with the US in the United Nations General Assembly. 
 
-The question is really this, what is the difference between voting  alignment with the US stances depending on other state characteristics. 
+Personal question: Is it voting coincidence, or is it state preference? What is the outcome variable? Might be able to use both...   
+My  research question is:  Are the recepients of US aid more inclined to US-aligned voting in the UNGA? Does this aid change their state preference. This question is interesting because ___. 
 
-My hypothesis is that we can use aid as a measure. There are  
+My central hypothesis is that recipients of US aid vote more frequently in line with the US.
+A second hypothesis is that recipients of greater levels of US aid are more likely to vote in-line with the US than recepeints of lower amounts of US aid. 
 
-The null hypothesis is that there is no significant difference between the measure of US-voting coincidence and the amount of aid that a country receives. 
+The null hypothesis is that there any difference between the measure of US-voting coincidence and the amount of aid that a country receives is due to pure chance. 
 
-## 2 Data Section
+This is interesting, as a question because____. 
+This is interesting, as a hypothesis because __.
 
-I will use Eric Voeten's member-state votes in the United Nations General Assembly, and derived from it  by __ to arrive at ideal-point estimates of state preferences in the UN. I will explore differences between UNGA voting in the periods of ___. 
-This data will be joined with data from AID, which gives data on bilateral aid commitments as reported by the donor governements. 
+## 2 Data Section ---------- Briefly describes the data source, describes how the key dependent and independent variables are measured (e.g., a survey, statistical model, or expert coding), and also produces a plot that summarizes the dependent variable) (2-3 paragraphs)
 
-My variable of interest is the measure of US alignment in the UNGA. The varible that I am using can be calculated from the ideal point estimations that are given by ___. This is a measure of the difference between the USA ideal point and a country's ideal point, for a given session. In this given session there is 
+This paper relies on two data sources, one for the dependent variable and one for the independent variable.
+
+Data for the my dependent variable is taken from Dreher et. all 2008, who provides a measure of state preference as calculated from United Nations General Assembly Voting Data. There is a sense in which there is a most   
+
+Data for my independent variable is taken from AID, which provides aggregated data on the amount of bilateral aid that a country reports that they committed to giving another country. 
+
+The variable that I am using can be calculated from the ideal point estimations that are given by ___. This is a measure of the difference between the USA ideal point and a country's ideal point, for a given session. I have named this variable `distance` and it is what we are trying to explain, for a given country in a given year. The value for the US in a given year is zero, because the US displayed voting patterns identical to itself. Therefore a distance of zero means relatively similar voting patterns?  
 
 
 
-My explanatory variable is whether or not there is a Republican or Democrat in the White House. 
 
-I will cover the years from the Cater Administration until the Obama Administration. 
+will use Eric Voeten's member-state votes in the United Nations General Assembly, and derived from it  by __ to arrive at ideal-point estimates of state preferences in the UN. I will explore differences between UNGA voting in the periods of ___. 
+This data will be joined with data from AID, which gives data on bilateral aid commitments as reported by the donor governments. 
 
-This dataset needs to be altered in order to account for which administration votes occurred in. I also need to assign weights in order to calculate voting coincidence.
+The data My variable of interest is the measure of alignment with the USA in the UNGA. The varible that I am using can be calculated from the ideal point estimations that are given by ___. This is a measure of the difference between the USA ideal point and a country's ideal point, for a given session. I have named this variable `distance` and it is what we are trying to explain, for a given country in a given year. The value for the US in a given year is zero, because the US displayed voting patterns identical to itself. Therefore a distance of zero means relatively similar voting patterns?  
+
+My explanatory variable is whether, or how much aid a country receives from the US. This is measured in this study by the amoung of aid that a country has committed to give a country. This is measured in USD.
+
+
+## Results--------- plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
+
+
+
+
+
+
+
+## Conclusion
+
+
+
+
+
 
 ```{r loadata, echo = FALSE}
 library(tidyverse)
@@ -60,9 +86,6 @@ View(presidents)
 completeVotes|> summary()
 
 ```
-
-### 2.1 Preparing Data
-
 
 ## Ideal Points  
 ```{r}
