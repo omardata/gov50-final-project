@@ -125,6 +125,7 @@ cart <- cart|>
                              vote %in% c("2", "8") & us_vote %in% c("1", "2") ~ .5))
 
 View(cart)
+
 ## Getting ATE per Country 
 per_country_party <- cart|> 
   group_by(Country, party)|> 
