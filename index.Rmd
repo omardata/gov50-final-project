@@ -22,6 +22,7 @@ My hypothesis is that under democratic presidents we will see an increase in vot
 The null hypothesis is that there is no significant difference between the measure of US-voting coincidence and the administration under which that coincidence is calculated.
 
 ## 2 Data Section
+
 I will use Eric Voeten's member-state votes in the United Nations General Assembly. I will explore differences between UNGA voting in the periods of Carter to Obama.
 
 My variable of interest is the measure of US alignment in the UNGA.
@@ -58,6 +59,240 @@ completeVotes|> summary()
 ```
 
 ### 2.1 Preparing Data
+
+
+## Ideal Points  
+```{r}
+## Can use a countries ideal point estimate? 
+## Can use a fraction of the voting decisions? Maybe use the ideal points first, if time think about the raw voting data
+View(ideal)
+
+## Adding year from session 
+ideal <- ideal|> mutate( country_cowc = countrycode(ccode, origin = 'cown' , destination = 'cowc'),
+                         country_cown = ccode,
+                         year_match = session + 1945)
+## W/O USA
+ideal_wo_us <- ideal|> 
+  group_by(country_cown, year_match)|>
+  select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
+  filter(!country_cown == 2)
+
+## US Values only
+ideal_onlyus <- ideal|>
+  filter(country_cown == 2)|>
+  select(session, IdealPointAll)|>
+  mutate(idealpoint_us = IdealPointAll)|>
+  select(!IdealPointAll)
+
+## idea now has US value
+ideal<- ideal|> 
+  left_join(ideal_onlyus, by = join_by(session))
+
+ideal <- ideal|> 
+  mutate(distance = idealpoint_us - IdealPointAll)|>
+  mutate(distance_abs = abs(distance))
+
+View(ideal_us)
+
+## Familiarizing Self w data
+ideal|> ggplot(mapping = aes(x = distance_abs))+
+  geom_histogram()
+
+ideal|> ggplot(mapping = aes(x = distance))+
+  geom_histogram()
+
+```
+
+
+###Prepping Aid Data 
+```{r}
+## This is the aggregated data, can choose to use thes disaggregated later, if time 
+aid <- read.csv("data/AidDataCoreDonorRecipientYear_ResearchRelease_Level1_v3.0.csv")
+aid
+## Got correct number of row? Yes. 
+
+View(aid_us)
+
+##gives data from 1973 to 2013 
+aid_us <- aid|>
+  filter(donor == "United States")
+
+##Change from  recepient name to COW character country code, add COW numeric code for matching w Ideal point data
+aid_us <- aid_us|> mutate( country = countrycode(recipient, origin = 'country.name', destination = 'cowc'))
+aid_us <- aid_us|> mutate( country_cown = countrycode(country, origin = 'cowc', destination = 'cown'))
+
+aid_us_test <- aid_us |> filter(is.na(country_cown))
+
+## Testing Names, there are no names that are ambigously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
+unique(aid_us_test$recipient)
+unique_names <- unique(cart$Countryname)
+unique_names <- enframe(unique_names)
+View(unique_names)
+cart|> filter(Countryname == "Serbia")
+
+## Aid US, changing date, PLUS on year. In order to use previous year's aid commitments to the vote year
+aid_us <- aid_us |> mutate(year_match = year + 1)|> select(!year_lagged)
+
+## Familiarizing Data.
+aid_us|> ggplot(mapping = aes( x = year, y = commitment_amount_usd_constant_sum ))+
+  geom_point()
+
+country_amount <-aid_us |> 
+   group_by(year_match)|> 
+   summarize(num_countries  = length(unique(country_cown)),
+             total_given = sum(commitment_amount_usd_constant_sum)) 
+  
+country_amount|>
+  ggplot(mapping = aes(x = year_match,
+                       y = num_countries))+
+  geom_line()
+
+
+country_amount|>
+  ggplot(mapping = aes(x = year_match,
+                       y = total_given))+
+  geom_line()
+
+ 
+```
+
+## Merging Aid and Idea 
+```{r}
+View(ideal)
+View(aid_us)
+
+##Checking that UN is unique? Good. 
+aid_us|>
+  count(country_cown, year_match) |>
+  filter(n > 1)
+
+## Remove data for country_cown is N/A
+aid_us <-  aid_us|>filter(!is.na(country_cown))
+
+## Check that ideal point is unique? Good.
+ideal|>
+  count(country_cown, year_match) |>
+  filter(n > 1)
+
+##Joined Aid and Ideal
+ideal_aid <- ideal|> 
+  left_join(aid_us, join_by(country_cown, year_match))
+View(ideal_aid)
+
+ideal_aid |> 
+  ggplot(mapping = aes(x = commitment_amount_usd_constant_sum, 
+                                  y = distance))+
+  geom_point()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Scrap Writing
+I want to explore the extent to which there is state agreement on certain votes? 
+The effect of something on voting coincidence in a particular time period and in a particular topic? 
+
+The effect of political turn-over in the UNGA voting coincidence?
+The role of leaders?
+The role of some country-level feature?
+ 
+ 
+Do small states agree more, do large states disagree more?
+Democratic or Republican presidents at the UN?
+Are there any statistical differences?
+
+
+
+Which subset of states? 
+Which votes, how to measure voting coincidence. Mutate,and create new variable that states coindidence or no coindidence. There are 
+
+Domestic Turn-over, or... international factors.. 
+
+ 
+What are valid and easy paper topics?
+I just need either an easy GOV 50 paper, or an easy overlap between the GOV 50 paper and the UN paper. 
+
+Do work on the UN paper first. Maybe whether or not there is an overlap. 
+
+
+Can also just do a single-time analysis. 
+Need something to test about the countries. '
+
+```{r}
+##Counting Number of Votes Total by Party
+cart |> group_by(party)|>
+  summarize(total = length(unique(rcid)))
+
+##Mean Coincidence by Party
+cart|> group_by(party)|>
+  summarize(mean_coin = mean(weight_coin_us, na.rm = TRUE))
+
+##Mean Coincidence per President
+cart|> group_by(president)|>
+summarize(mean_coin = mean(weight_coin_us, na.rm = TRUE))
+
+##Maybe remove the israel votes? Maybe look at 
+##Maybe look at who votes in line with the US most often?
+
+cart|> group_by(Country, party)|>
+  summarize(mean_coin_country = mean(weight_coin_us, na.rm = TRUE))|>
+  pivot_wider(names_from = party, 
+              values_from = mean_coin_country)|>
+  mutate(ate = `Democrat` - `Republican`)|>
+  ggplot(mapping = aes( y = ate))+
+  geom_histogram()
+```
+
+```{r}
+# Testing trump 
+votes_trump<- completeVotes|>
+  filter(year >= 2017)|>
+  group_by(rcid)|> 
+  summarize(mean = mean(vote ==1) )
+
+votes_trump
+
+View(completeVotes)
+
+unique(completeVotes$year)
+votes_trump|> summarize(mean = mean(mean))
+
+
+votes_obama <- completeVotes|>
+  filter(year < 2017 & year>2008)|>
+  group_by(rcid)|> 
+  summarize(mean = mean(vote ==1) )
+votes_obama|> summarize (mean = mean(mean))
+
+
+  group_by(rcid)|>
+  summarize(mean_yes = mean(vote == 1))|>
+  ggplot( mapping = aes( x =mean_yes))+
+  geom_histogram(binwidth = .05)
+
+## From LEAD data
+lead_trump<- lead |> filter(year >= 2019)
+lead
+unique(lead_post1975$idacr)
+
+```
+
+
+
 ```{r}
 ## Editing Dates on President's to Match UNGA Votes Format 
 presidents <- presidents |> 
@@ -140,211 +375,5 @@ per_country_party <- cart|>
 View(per_country_party)
 
 
-
-```
-
-## Ideal Points  
-```{r}
-## Can use a countries ideal point estimate? 
-## Can use a fraction of the voting decisions? Maybe use the ideal points first, if time think about the raw voting data
-View(ideal)
-
-## Adding year from session 
-ideal <- ideal|> mutate( country_cowc = countrycode(ccode, origin = 'cown' , destination = 'cowc'),
-                         country_cown = ccode,
-                         year_match = session + 1945)
-## W/O USA
-ideal|> group_by(country_cown, year_match)|>
-  select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
-  filter(!country_cown == 2)
-
-## US Values only
-ideal_us <- ideal|>
-  filter(country_cown == 2)|>
-  group_by(country_cown, year_match)|>
-  select(session, IdealPointAll)
-
-ideal|> left_join(ideal_us, join_by = session)
-View(ideal_us)
-```
-
-
-###Prepping Aid Data 
-```{r}
-## This is the aggregated data, can choose to use thes disaggregated later, if time 
-aid <- read.csv("data/AidDataCoreDonorRecipientYear_ResearchRelease_Level1_v3.0.csv")
-aid
-## Got correct number of row? Yes. 
-
-View(aid_us)
-
-##gives data from 1973 to 2013 
-aid_us <- aid|>
-  filter(donor == "United States")
-
-##Change from  recepient name to COW character country code, add COW numeric code for matching w Ideal point data
-aid_us <- aid_us|> mutate( country = countrycode(recipient, origin = 'country.name', destination = 'cowc'))
-aid_us <- aid_us|> mutate( country_cown = countrycode(country, origin = 'cowc', destination = 'cown'))
-
-aid_us_test <- aid_us |> filter(is.na(country_cown))
-
-## Testing Names, there are no names that are ambigously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
-unique(aid_us_test$recipient)
-unique_names <- unique(cart$Countryname)
-unique_names <- enframe(unique_names)
-View(unique_names)
-cart|> filter(Countryname == "Serbia")
-
-## Aid US, changing date, minus on year. In order to use previous year's aid commitments
-aid_us <- aid_us |> mutate(year_match = year - 1)
-
-View(aid_us)
-View(ideal)
-
-```
-
-## Merging Aid and UN Data 
-```{r}
-View(ideal)
-View(aid_us)
-
-##Checking that UN is unique? Good. 
-aid_us|>
-  count(country_cown, year_match) |>
-  filter(n > 1)
-
-## Remove data for country_cown is N/A
-aid_us <-  aid_us|>filter(!is.na(country_cown))
-
-## Check that ideal point is unique
-aid_us|>
-  count(country_cown, year_lagged) |>
-  filter(n > 1)
-
-
-vote_join_aid <- completeVotes|> left_join()
-
-
-
-
-```
-
-
-
-
-
-
-### 2.3 Dependent and Independent Variable 
-
-
-
-
-
-## Running Calculations of Coincidence Means
-
-```{r}
-##Counting Number of Votes Total by Party
-cart |> group_by(party)|>
-  summarize(total = length(unique(rcid)))
-
-##Mean Coincidence by Party
-cart|> group_by(party)|>
-  summarize(mean_coin = mean(weight_coin_us, na.rm = TRUE))
-
-##Mean Coincidence per President
-cart|> group_by(president)|>
-summarize(mean_coin = mean(weight_coin_us, na.rm = TRUE))
-
-##Maybe remove the israel votes? Maybe look at 
-##Maybe look at who votes in line with the US most often?
-
-cart|> group_by(Country, party)|>
-  summarize(mean_coin_country = mean(weight_coin_us, na.rm = TRUE))|>
-  pivot_wider(names_from = party, 
-              values_from = mean_coin_country)|>
-  mutate(ate = `Democrat` - `Republican`)|>
-  ggplot(mapping = aes( y = ate))+
-  geom_histogram()
-```
-
-
-
-```{r}
-completeVotes |> filter (importantvote ==1, year >= 2018)
-```
-
-
-
-
-
-
-
-
-## Scrap Writing
-
-
-
-I want to explore the extent to which there is state agreement on certain votes? 
-The effect of something on voting coincidence in a particular time period and in a particular topic? 
-
-The effect of political turn-over in the UNGA voting coincidence?
-The role of leaders?
-The role of some country-level feature?
- 
- 
-Do small states agree more, do large states disagree more?
-Democratic or Republican presidents at the UN?
-Are there any statistical differences?
-
-
-
-Which subset of states? 
-Which votes, how to measure voting coincidence. Mutate,and create new variable that states coindidence or no coindidence. There are 
-
-Domestic Turn-over, or... international factors.. 
-
- 
-What are valid and easy paper topics?
-I just need either an easy GOV 50 paper, or an easy overlap between the GOV 50 paper and the UN paper. 
-
-Do work on the UN paper first. Maybe whether or not there is an overlap. 
-
-
-Can also just do a single-time analysis. 
-Need something to test about the countries. '
-
-
-
-```{r}
-# Testing trump 
-votes_trump<- completeVotes|>
-  filter(year >= 2017)|>
-  group_by(rcid)|> 
-  summarize(mean = mean(vote ==1) )
-
-votes_trump
-
-View(completeVotes)
-
-unique(completeVotes$year)
-votes_trump|> summarize(mean = mean(mean))
-
-
-votes_obama <- completeVotes|>
-  filter(year < 2017 & year>2008)|>
-  group_by(rcid)|> 
-  summarize(mean = mean(vote ==1) )
-votes_obama|> summarize (mean = mean(mean))
-
-
-  group_by(rcid)|>
-  summarize(mean_yes = mean(vote == 1))|>
-  ggplot( mapping = aes( x =mean_yes))+
-  geom_histogram(binwidth = .05)
-
-## From LEAD data
-lead_trump<- lead |> filter(year >= 2019)
-lead
-unique(lead_post1975$idacr)
 
 ```
