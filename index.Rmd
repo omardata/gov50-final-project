@@ -33,9 +33,6 @@ Data for my independent variable, `aid_committment`, is from  AidData’s Core R
 
 
 
-
-
-
 The data Dreher et al provide is the result of a statistical model derivedfrom Eric Voeten's data on member-state votes in the United Nations General Assembly. Dreher et als  arrive at what they call ideal-point estimates of state preferences. These esimates can be used to derive the  
 
 
