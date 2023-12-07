@@ -158,7 +158,14 @@ ideal|> group_by(country_cown, year_match)|>
   select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
   filter(!country_cown == 2)
 
-## 
+## US Values only
+ideal_us <- ideal|>
+  filter(country_cown == 2)|>
+  group_by(country_cown, year_match)|>
+  select(session, IdealPointAll)
+
+ideal|> left_join(ideal_us, join_by = session)
+View(ideal_us)
 ```
 
 
@@ -189,10 +196,9 @@ View(unique_names)
 cart|> filter(Countryname == "Serbia")
 
 ## Aid US, changing date, minus on year. In order to use previous year's aid commitments
-aid_us <- aid_us |> mutate(year_match = year -1)
+aid_us <- aid_us |> mutate(year_match = year - 1)
 
 View(aid_us)
-
 View(ideal)
 
 ```
