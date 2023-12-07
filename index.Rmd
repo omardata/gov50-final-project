@@ -23,22 +23,39 @@ A second hypothesis is that recipients of greater levels of US aid are more like
 The null hypothesis is that there any difference between the measure of US-voting coincidence and the amount of aid that a country receives is due to pure chance. 
 
 This is interesting, as a question because____. 
-This is interesting, as a hypothesis because __.
+This is interesting, as a hypothesis because ___.
 
 ## 2 Data Section ---------- Briefly describes the data source, describes how the key dependent and independent variables are measured (e.g., a survey, statistical model, or expert coding), and also produces a plot that summarizes the dependent variable) (2-3 paragraphs)
 
 This paper relies on two data sources, one for the dependent variable and one for the independent variable.
 
-Data for the my dependent variable is taken from Dreher et. all 2008, who provides a measure of state preference as calculated from United Nations General Assembly Voting Data. There is a sense in which there is a most   
+My dependent variable, `distance`,is calculated from data of estimated measures of state preference as provided by Dreher et. all 2008. Dreher et all provide a numeric measure of the variable `idealpointestimate`  
 
-Data for my independent variable is taken from AID, which provides aggregated data on the amount of bilateral aid that a country reports that they committed to giving another country. 
+
+
+state/session level measure of state preference as calculated from United Nations General Assembly Voting Data. For a given session, the values of these sets of the  
+
+
+measure of state preference as calculated from United Nations General Assembly Voting Data.reher et. all 2008.
+
+
+
+
+who provides a measure of state preference as calculated from United Nations General Assembly Voting Data.reher et. all 2008.
 
 The variable that I am using can be calculated from the ideal point estimations that are given by ___. This is a measure of the difference between the USA ideal point and a country's ideal point, for a given session. I have named this variable `distance` and it is what we are trying to explain, for a given country in a given year. The value for the US in a given year is zero, because the US displayed voting patterns identical to itself. Therefore a distance of zero means relatively similar voting patterns?  
 
+Data for my independent variable is taken from AID, which provides aggregated data on the amount of bilateral aid that a country reports that they committed to giving another country. 
 
 
 
-will use Eric Voeten's member-state votes in the United Nations General Assembly, and derived from it  by __ to arrive at ideal-point estimates of state preferences in the UN. I will explore differences between UNGA voting in the periods of ___. 
+
+
+
+The data Dreher et al provide is the result of a statistical model derivedfrom Eric Voeten's data on member-state votes in the United Nations General Assembly. Dreher et als  arrive at what they call ideal-point estimates of state preferences. These esimates can be used to derive the  
+
+
+I will explore differences between UNGA voting in the periods of ___. 
 This data will be joined with data from AID, which gives data on bilateral aid commitments as reported by the donor governments. 
 
 The data My variable of interest is the measure of alignment with the USA in the UNGA. The varible that I am using can be calculated from the ideal point estimations that are given by ___. This is a measure of the difference between the USA ideal point and a country's ideal point, for a given session. I have named this variable `distance` and it is what we are trying to explain, for a given country in a given year. The value for the US in a given year is zero, because the US displayed voting patterns identical to itself. Therefore a distance of zero means relatively similar voting patterns?  
