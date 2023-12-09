@@ -59,39 +59,16 @@ ideal_aid |> group_by(ccode, session)|>
   summarize(mean_prev_years = sum(idealpin ))
   mutate(change_diff =  )
 
-  
-  
-## finding prev years into rows,
-minus_one <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session_minus_one = session - 1)
 
-minus_two <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session_minus_two = session - 2)
- 
-plus_one <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session_plus_one = session + 1 )
+                      
 
-plus_two <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session_plus_two = session + 2)
 
-idea_aid <- ideal_aid|> mutate(session_minus_one = session - 1,
-                   session_minus_two = session - 2,
-                   session_plus_one = session + 1,
-                   session_plus_two = session + 2
-                   )
+ideal_aid<- ideal_aid |> 
+  select(!session_minus_one)
 
-ideal_aid|> left_join(minus_one )
 
-  
-  ## W/O USA
+
+## W/O USA
 ideal_wo_us <- ideal|> 
   group_by(country_cown, year_match)|>
   select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
@@ -206,7 +183,7 @@ ideal <- ideal|>
   mutate(distance = idealpoint_us - IdealPointAll)|>
   mutate(distance_abs = abs(distance))
 
-View(ideal_us)
+View(ideal)
 
 
 
@@ -305,22 +282,47 @@ ideal_aid <- ideal|>
   left_join(aid_us, join_by(country_cown, year_match))
 View(ideal_aid)
 
-ideal_aid |>filter(year_match > 1990,
-                   commitment_amount_usd_constant_sum >1000000)|>
-  ggplot(mapping = aes(x = commitment_amount_usd_constant_sum, 
-                                  y = distance))+
-  geom_point()
-
 ## adding column for zeros instead of NAs
-ideal_aid <- ideal_aid |>
-  mutate(committed = if_else( is.na(commitment_amount_usd_constant_sum),0, commitment_amount_usd_constant_sum)
+ideal_aid<- ideal_aid |>
+  mutate(committed = if_else( is.na(commitment_amount_usd_constant_sum), 0, commitment_amount_usd_constant_sum)
          
 ## Adding millions
-ideal_aid <- ideal_aid |>
+ideal_aid<- ideal_aid |>
   mutate(committed_millions = committed/ 1000000)
 
+View(ideal_aid)
 
 ## Adding group for aid determination.. is there some way of showing this? 
+
+
+
+
+## Finding prev years into rows
+minus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session - 1)
+
+minus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session - 2)
+ 
+plus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session + 1 )
+
+plus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session + 2)
+
+
+
+ideal_aid <- ideal_aid|> left_join(minus_one, 
+                      by = join_by(ccode, session), 
+                      suffix = c("parent", "minus_one"))
 ```
 
 
