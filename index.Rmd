@@ -261,8 +261,6 @@ country_amount|>
 
 ## Merging Aid and Idea 
 ```{r}
-View(ideal)
-View(aid_us)
 
 ##Checking that UN is unique? Good. 
 aid_us|>
@@ -284,7 +282,7 @@ View(ideal_aid)
 
 ## adding column for zeros instead of NAs
 ideal_aid<- ideal_aid |>
-  mutate(committed = if_else( is.na(commitment_amount_usd_constant_sum), 0, commitment_amount_usd_constant_sum)
+  mutate(committed = if_else( is.na(commitment_amount_usd_constant_sum), 0, commitment_amount_usd_constant_sum ))
          
 ## Adding millions
 ideal_aid<- ideal_aid |>
@@ -317,17 +315,54 @@ plus_two <- ideal_aid|>
   group_by(ccode, session)|>
   select(ccode, session, IdealPointAll)|>
   mutate(session = session + 2)
-
-
-
-ideal_aid <- ideal_aid|> left_join(minus_one, 
-                      by = join_by(ccode, session), 
-                      suffix = c("parent", "minus_one"))
 ```
 
+```{r}
+## Adding new colums for other years
+ideal_aid <- ideal_aid|> left_join(minus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_minus_one"))
+
+ideal_aid <- ideal_aid|> left_join(minus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_minus_two"))
+
+ideal_aid <- ideal_aid|> left_join(plus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_one"))
 
 
+ideal_aid <- ideal_aid|> left_join(plus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_two"))
 
+ideal_aid<- ideal_aid|> 
+  mutate(ideal_two_before = IdealPointAll_plus_two,
+         ideal_one_before = IdealPointAll_plus_one,
+         ideal_duplicate = IdealPointAll,
+         ideal_one_after = IdealPointAll_minus_one,
+         ideal_two_after = IdealPointAll_minus_two)
+```
+
+ideal_aid <- ideal_aid|> left_join(minus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_minus_one"))
+
+ideal_aid <- ideal_aid|> left_join(minus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_minus_two"))
+
+ideal_aid <- ideal_aid|> left_join(plus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_one"))
+
+
+ideal_aid <- ideal_aid|> left_join(plus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_two"))
+
+
+```
 
 
 
