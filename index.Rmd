@@ -55,8 +55,65 @@ ideal_aid|>
   geom_histogram()
 
 ##What causes a big drop in the data? Are there any changes that are bigger than others? 
-ideal_aid |> 
-  mutate( )
+ideal_aid |> group_by(ccode, session)|>
+  summarize(mean_prev_years = sum(idealpin ))
+  mutate(change_diff =  )
+
+  
+  
+## finding prev years into rows,
+minus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session_minus_one = session - 1)
+
+minus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session_minus_two = session - 2)
+ 
+plus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session_plus_one = session + 1 )
+
+plus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session_plus_two = session + 2)
+
+idea_aid <- ideal_aid|> mutate(session_minus_one = session - 1,
+                   session_minus_two = session - 2,
+                   session_plus_one = session + 1,
+                   session_plus_two = session + 2
+                   )
+
+ideal_aid|> left_join(minus_one )
+
+  
+  ## W/O USA
+ideal_wo_us <- ideal|> 
+  group_by(country_cown, year_match)|>
+  select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
+  filter(!country_cown == 2)
+
+## US Values only
+ideal_onlyus <- ideal|>
+  filter(country_cown == 2)|>
+  select(session, IdealPointAll)|>
+  mutate(idealpoint_us = IdealPointAll)|>
+  select(!IdealPointAll)
+
+## ideal now has US value
+ideal<- ideal|> 
+  left_join(ideal_onlyus, by = join_by(session))
+
+ideal <- ideal|> 
+  mutate(distance = idealpoint_us - IdealPointAll)|>
+  mutate(distance_abs = abs(distance))
+
+View(ideal_us)
+
 
 ```
 
@@ -141,7 +198,7 @@ ideal_onlyus <- ideal|>
   mutate(idealpoint_us = IdealPointAll)|>
   select(!IdealPointAll)
 
-## idea now has US value
+## ideal now has US value
 ideal<- ideal|> 
   left_join(ideal_onlyus, by = join_by(session))
 
