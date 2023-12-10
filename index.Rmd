@@ -182,7 +182,7 @@ ideal_treat_fil<- ideal_treat |>filter(session == 29:69)
 
 
 ## 1 Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs)
-This paper will explore the relationship between a country's foreign-policy preferences and the amount of aid that country receives from the United States. Ultimately the question that interests me is does US provision of aid make the recipients of aid more inclined to the support of the US-led liberal world order? 
+This paper will explore the relationship between a country's foreign-policy preferences and the amount of aid that country receives from the United States by looking at data that is derived from session 29-69 of the United Nations General Assembly. Ultimately the question that interests me is does US provision of aid make the recipients of aid more inclined to the support of the US-led liberal world order? 
 
 The underlying foreign policy preferences of a state are a central concern in international relations literature-  “perhaps the most fundamental issue” in the discipline (Johnston 2005, 1040). It is of great interest to be able to predict which factors affect whether a state is likely to support one foreign policy over another. A state's preferences play a part in guiding how a state acts, but these preferences are not a "not directly observed and thus need to be inferred from observable behavior"(Dreher et al). Thus many turn to votes in the United Nations General Assembly as a place to observe state behavior and attempt to operationalize and quantify state preferences. UNGA votes are an attractive option primarily because "they are comparable and observable actions taken by many countries at set points in time"(Dreher et al). 
 
@@ -325,9 +325,14 @@ gof_map = c("nobs", "r.squared", "adj.r.squared"))
 ```
 
 
-
 ##Secondary Analysis
-Because of the failure of my primary analysis to produce a statistically significant result, I performed this second analysis, in part to speak to the second hypothesis that I posed. I was interested to see if higher amounts of aid were what we should be focusing on in analyzing the relationships between state preference and aid commitments. In this section I simply too pooled all observation of changes in. Where as before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US. 
+Because of the failure of my primary analysis to produce a statistically significant result, I performed this second analysis, in part to speak to the second hypothesis that I posed. I was interested to see if higher amounts of aid were what we should be focusing on in analyzing the relationships between state preference and aid commitments. In this section I simply too pooled all observation of changes in. Where as before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US with no respect to session. 
+
+Thus I get a distribution for all observed changes that looks like this `r second_dist`.
+
+I ran two regression models on this data. In the first I use the same treatment varible from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in __. Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coeficient is the coeficint of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `r -1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `r main_coef_p`, this coefficient is also not statistically significant. 
+
+The second regression I run includes a few more categorical
 
 
 ```{r}
