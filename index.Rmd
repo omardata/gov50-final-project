@@ -259,26 +259,53 @@ To calculate the difference in differences we can then first take the average ch
 I work under the assumption that in a given session all countries will experience, on average parallel trends through time. Thus, if we observe a decrease in the distance from the USA for countries that are in the treatment group that is relatively higher than the decrease that we observe for those in the treatment, this would be evidence for my hypothesis. That is a statistically significant negative ATE would be evidence for my hypothesis. 
 
 ## Results--------- plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
-In summary my findings are that ____
-on average the commitment of bilateral aid from the US to other countries is correlated with a foreign-policy preference convergence between the US and those countries. REWORD.
+In summary my findings are that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country.
 
-My first and primary analysis is simply takin any commitment of aid as treatment. Using a difference in differences approach for the average chang from the prvious year to the current year, we find that a country in the treatment group is on average predicted to have a decrease in their distance from the United States. The regression aanlysis on the treatment as a categorical predictor yields two coefficients. One is an intercept which represents the models prediction for the baseline group, that is the control. The value of the intercept is positive at __ indicating that on average countries in the control were slighly more likely to increase their distancce from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coeficient is not statistically signifcant, and in fact is highly arebitrary. For countries in the control this model is rather uninformative. 
+My first and primary analysis is simply taking any commitment of aid as treatment. Using a difference in differences approach for the average chang from the prvious year to the current year, we find that a country in the treatment group is on average predicted to have a decrease in their distance from the United States. The regression aanlysis on the treatment as a categorical predictor yields two coefficients. One is an intercept which represents the models prediction for the baseline group, that is the control. The value of the intercept is positive at __ indicating that on average countries in the control were slighly more likely to increase their distancce from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coeficient is not statistically signifcant, and in fact is highly arebitrary. For countries in the control this model is rather uninformative. 
 
 However, for countries in the treatment group the model is rather clear of its prediction. The main  coeficient of interest is negative indicating that for a country that has received any amount of aid we should expect to see the distance between that country and the United States. More specifically we should expect to see a decrease in the distance of approximately ___. 
 
 
 PLOT of analysis. Which sort of plot.. Bar? 
 
+
 ```{r}
 
-
-ideal_treat|> group_by(session, treatment_any)|>
+ate_table <-ideal_treat|> 
+  group_by(session, treatment_any)|>
   summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
   pivot_wider(names_from = treatment_any,
               values_from = mean_change_one)|>
   mutate(session_ate = `1` - `0`)|>
-  filter(!is.na(session_ate))|>
-  ggplot(mapping = aes(x = ))
+  filter(!is.na(session_ate))
+
+ate_table_names<- ate_table[, c(1, 3, 2, 4)]
+colnames(ate_table_names) <- c("Session", "Treatment", "Control", "Sesssion ATE")
+## All session ATES in table
+knitr::kable(ate_table_names)
+
+
+ate_averages_across <- c(mean(ate_table_names$Treatment), mean(ate_table_names$Control))
+as_tibble(ate_averages_across)|> 
+
+ate_averages_across<- data.frame(Treatment = mean(ate_table_names$Treatment),
+                                 Control = mean(ate_table_names$Control)
+                                 )
+  
+ate_average_across_table<- as_tibble(ate_averages_across)|> 
+  mutate(ate_across_sessions =  `Treatment` - `Control`)
+
+colnames(ate_average_across_table)<- c("Treatment Mean Sessions", "Control Mean Across Sessions", "ATE Across Sessions")
+
+
+
+## Making distribution of the differences for all sessions 
+
+
+ideal_treat|>
+  group
+
+
 ```
 
 
