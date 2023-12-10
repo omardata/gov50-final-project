@@ -397,21 +397,18 @@ summary(fit_diff_two)
 
 ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
                                  treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
-                                 treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 1000),1,0),
-                                 treat_high = if_else(committed_millions >1000, 1, 0)
+                                 treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
+                                 treat_high = if_else(committed_millions >100, 1, 0)
                                  )
-
-
-
-
-
-
-
-
-
 
 View(ideal_treat)
 
+
+fit_treat<- lm(change_two_before ~ treatment_any, data = ideal_treat)
+fit_treat_all <- lm (change_two_before ~ treatment_any + treat_some + treat_middle + treat_high, data = ideal_treat)
+
+summary(fit_treat)
+summary(fit_treat_all)
 
 
 
