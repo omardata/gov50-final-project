@@ -52,7 +52,6 @@ ideal <- ideal|>
   mutate(distance = idealpoint_us - IdealPointAll)|>
   mutate(distance_abs = abs(distance))
 
-
 ##Familiarizing Self w data
 ###ideal|> ggplot(mapping = aes(x = distance_abs))+geom_histogram()
 ##ideal|> ggplot(mapping = aes(x = distance))+geom_histogram()
@@ -129,8 +128,6 @@ aid_us <- aid_us |> mutate(year_match = year + 1)
 ```
 
 ```{r testingnamees, eval = FALSE}
-
-
 ## Testing Names, there are no names that are ambiguously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
 unique(aid_us_test$recipient)
 unique_names <- unique(ideal$Countryname) ## Possible problem  using ideal
@@ -140,7 +137,6 @@ cart|> filter(Countryname == "Serbia")
 
 
 ```
-
 
 
 ```{r dataglance, eval = FALSE}
@@ -173,9 +169,8 @@ country_amount|>
 ```
 
 
-## Merging Aid and Idea 
+## Merging Aid and Ideal 
 ```{r}
-
 ##Checking that UN is unique? Good. 
 aid_us|>
   count(country_cown, year_match) |>
@@ -203,38 +198,43 @@ ideal_aid<- ideal_aid |>
 
 View(ideal_aid)
 
-## Adding group for aid determination.. is there some way of showing this? 
+## Adding groups for aid determination.. is there some way of showing this? 
+ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
+                                 treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
+                                 treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
+                                 treat_high = if_else(committed_millions > 100, 1, 0),
+                                 treat_bil = if_else(committed_millions > 1000, 1, 0),
+                                 treat_sig = if_else(committed_millions > 10, 1, 0)
+                                )
 
 
 ```
 
 
-
-
 ## 1 Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs)
-This paper will explore the relationship between a country's foreign-policy preferences and the amount of aid that country receives from the United States. Ultimately the question that interets me is does US provision of aid make the recipients of aid more inclined to the support of the US-led liberal world order? 
+This paper will explore the relationship between a country's foreign-policy preferences and the amount of aid that country receives from the United States. Ultimately the question that interests me is does US provision of aid make the recipients of aid more inclined to the support of the US-led liberal world order? 
 
-There has been some evidence for US practice of using the IMF and World Bank to buy support from other member states for its position on votes in the United Nations General Council (reference Dreher and Strun 2012). However interesting  this sort of analysis is, my paper aims to do something a bit different than a focus on vote buying. Some like  Dreher, Axel, P. Nunnenkamp, and R. Thiele. 2008 (‘‘Does US Aid Buy UN General Assembly Votes? A Disaggregated Analysis.’’ Public Choice 136 (1): 139-64.)) explore the question of how aid might be a means of buying support for votes. While they give a robust treatement of the quesiton regarding the effects of different types of aid, they are still interested in simply in the voting coincidence of the US and a recipient of its aid. 
+The underlying foreign policy preferences of a state are a central concern in international relations literature-  “perhaps the most fundamental issue” in the discipline (Johnston 2005, 1040). It is of great interest to be able to predict which factors affect whether a state is likely to support one foreign policy over another. A state's preferences play a part in guiding how a state acts, but these preferences are not a "not directly observed and thus need to be inferred from observable behavior"(Dreher et al). Thus many turn to votes in the United Nations General Assembly as a place to observe state behavior and attempt to operationalize and quantify state preferences. UNGA votes are an attractive option primarily because "they are comparable and observable actions taken by many countries at set points in time"(Dreher et al). 
 
-My approach is a bit different, and focuses not on the effect of aid on voting coincidence, but on state-preference. My  research question is this: Do the state preferences of countries that receive US aid become more aligned with those of the US? My central hypothesis is that when the US gives a country aid, it becomes more likely that the state preferences between these two countries align. A second hypothesis that I am interested in testing is whether or not the  recipients of greater levels of US aid are more likely to vote in-line with the US than recipients of lower amounts of US aid. The null hypothesis is that there any difference between the measure of US-voting coincidence and the amount of aid that a country receives is due to random chance.
+However, it is crucial to emphasize that there might be some important differences between a state's underlying preference and how a state chooses to vote in the UNGA. A  state's foreign policy preference might be just one among a number of factors that affect that state votes. For instance, while a country might vote the same way as the Unite States on all resolutions in the UNGA, other factors such as strategic calculation or coercion might be at play. That is to say, just because the voting patterns of a pair of countries align, it is not necessarily the case that that the preferences of these two countries aligns. For example, there is some evidence for US practice of using the IMF and World Bank to buy support from other member states for its position on votes in the United Nations General Council (reference Dreher and Strun 2012). While some anlaysis such as  (another is Dreher, Axel, P. Nunnenkamp, and R. Thiele. 2008 (‘‘Does US Aid Buy UN General Assembly Votes? A Disaggregated Analysis.’’ Public Choice 136 (1): 139-64.)) give a robust treatement of the quesiton regarding the effects of different types of aid, they are still interested in simply in the voting coincidence of the US and a recipient of its aid. However interesting this sort of analysis is, my paper aims to do something a bit different than a focus on vote-buying relationship between the the US and other countries but rather on the effect of US aid on underlying state-preference. 
 
-Evidence for an increase in alignment  would be to see a decrease in the distance. Thus evidence for my hypothesis would be to see that following the commitment of aid this distance would decrease, that is we would see a negative change over one year.  
+My  research question is this: Do the state preferences of countries that receive US aid become more aligned with those of the US? My central hypothesis is that when the US committs to giving a country aid, it becomes more likely that the state preferences between these two countries align. A second hypothesis that I am interested in testing is whether or not the  recipients of greater levels of US aid are more likely to align, and align to a greater degree with the US than recipients of lower amounts of US aid. The null hypothesis is that variation in the foreign policy alignment between the the US and other countries is due to random chance and not to the amount of aid that a country receives from the US. 
 
-Concept 
-Conceptual definition
-Operational definition 
+Evidence for an increase in alignment between the US and another country would be to see a decrease in the distance between the foreign policy preference of these two countries. Thus evidence for my hypothesis would be to see that following the commitment of aid this distance would decrease, that is we would see a negative change after thes commitment of aid.  
+
 
 ## 2 Data Section ---------- Briefly describes the data source, describes how the key dependent and independent variables are measured (e.g., a survey, statistical model, or expert coding), and also produces a plot that summarizes the dependent variable) (2-3 paragraphs)
 
 In order to analyze this effect I use two pretty cool data sets, one for the dependent variable and one for the independent variable.
 
-My dependent variable, ` ____ `, is calculated from estimated measures of state preference provided by Dreher et. all 2008. This numeric estimate of state preference that Dreher et al provide is the result of a statistical model  that uses, in part, Eric Voeten's data on member-state votes in the United Nations General Assembly. This numeric measure of state-preference is given at a state/session level, that is it provides a single measure of state preference for a given country, in a given year. This ideal point data is more than just measure of state voting coincidence with the US-- this data set is one of the things that makes this paper interesting. This ideal point estimate is ___ and ___ and ____. Ultimately, their ideal sestimate is a measure of "consistently capture the position of states vis-a`-vis a US-led liberal order."(pg 431). Dreher et al explicitly state the suitability of their ideal point estimates for analyzing the influence of aid, thus this is an interesting project that is taking this cool data from a statistical model and using it to attempt to learn about the dynmaic that unfolds with US aid. 
+My dependent variable, `change_one_before`, is calculated from estimated measures of state preference provided by Dreher et. all 2008. This numeric estimate of state preference that Dreher et al provide is the result of a statistical model  that uses, in part, Eric Voeten's data on member-state votes in the United Nations General Assembly. This numeric measure of state-preference is given at a state/session level, that is it provides a single measure of state preference for a given country, in a given year. This ideal point data is more than just measure of state voting coincidence with the US-- this data set is one of the things that makes this paper interesting. This ideal point estimate is a ultimately, a measure to "consistently capture the position of states vis-a`-vis a US-led liberal order."(pg 431). Dreher et al explicitly emphasize the suitability of their ideal point estimates for analyzing the influence of aid, thus this is an interesting project that is taking this cool data from a statistical model and using it to attempt to learn about the dynamic that unfolds with US aid. 
 
-There are a two steps to calculating my dependent variable `change_distance_one`. First, I had to calculate a measure of the alignment of state preference between a given country and the US for a given session.  The variable `distance_abs` is a measure of the alignment of a given country  with the US in a given session, arrived at by subtracting the value of the a given countries ideal-point estimate for a particular session from the USA's ideal-point estimate for that same session, and finally taking the absolute value. Second, I use this `distance_abs` variable to calculate a measure of how a  countries preference alignment with the US has changed from the past session to the current session. Thus, my dependent variable `change_distance_one`, for a given country in session n is calculated by subtracting the `distance_abs`of session n from the `distance_abs` value for that country in session n-1. 
+There are a two steps to calculating my dependent variable `change_one_before`. First, I had to calculate a measure of the alignment of state preference between a given country and the US for a given session.  The variable `distance_abs` is a measure of the alignment of a given country  with the US in a given session, arrived at by subtracting the value of the a given countries ideal-point estimate for a particular session from the USA's ideal-point estimate for that same session, and finally taking the absolute value. Second, I use this `distance_abs` variable to calculate a measure of how a  countries preference alignment with the US has changed from the past session to the current session. Thus, my dependent variable `change_distance_one`, for a given country in session n is calculated by subtracting the `distance_abs`of session n from the `distance_abs` value for that country in session n-1.
 
-Data for my independent variable, `aid_commitment`, comes from  AidData’s Core Research Release Version 3.0. The data set provides aggregated data (but also, they provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported in __ and is given in constant dollars ($USD for 2011) to allow for time-series analysis. This variable is also reported at a recipient-year level, meaning that it provides the amount that the United State's committed to a given state in a given year. I follow the practice of assuming that if a country didn't report aid to report that as a zero, and to take a commitment to providing aid as a sufficient variable for anlaysis though there might be some discrepancy for aid that actually is paid out and aid that is committed.  
+Data for my independent variable, `treatment_any` comes from  AidData’s Core Research Release Version 3.0. This variable is a binary variable that is calculated from AidCores aggregated data (but also, they provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported from various sources and is given in constant ($USD for 2011) dollars, and in million to allow for time-series analysis. This raw data is reported under the variable `commitment_millions`. This data is also reported at a recipient-year level, meaning that it provides the amount that the United State's committed to a given state in a given year. I follow the practice of assuming that if a country didn't report aid to  a country in a given year then the commitment of aid for that year was in fact zero. I also take a commitment to providing aid as a sufficient variable for analysis though there might be some discrepancy for aid that actually is paid out and aid that is committed, and thus some room for further analysis of aid actually delivered as the treatment condition.= 
 
-If we look at all the observed changes in distance_abs for all sessions, they appear to be normally distributed and centered at about zero, with a standard deviation of `r change_one_sd`. 
+If we look at all the distribution of all `change_one_before` for all session, it appears that the variable follows a normally distribution, centered at about zero, with a standard deviation of `r change_one_sd`. 
+
 
 ```{r}
 changes_dist <- ideal_treat|> 
@@ -248,9 +248,13 @@ summary(ideal_treat$change_one_before)
   
 ```
 
-My research design employs a differences-in-differences approach. I treat the the commitment of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. So  no aid commitment in is the control, and receiving aid is the treatment. More specifically I lag the aid commitment to make it so that for a given session n, a  country is counted as being in the control group if and only if it received a commitment for aid in the the year before that session. Lagging the time of the of the commitment by one year is to preempt possible ___. 
+My research design employs a differences-in-differences approach. I treat the the commitment of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. My independent variable is `treatment_any` and my depended varibale is `change_one_before`. Both of my variables are determined for country-session pairs.
 
-For a given country in session n we can calculate the difference in how that alignment with the United States has changed from the previous session, n-1. This gives us a value for the variable `change_one_before`, which is the before and after difference for a given country. To calculate the difference in differences we can then first take the average change among all countries in the control group and subtract it from the average change of all countries in the treatment group. This gives us an estimated average treatment effect. 
+My independent variable is `treatment_any` is a binary variable describing whether or not a country was the recipient of any non-zero amount of US foreign aid in the preceedidng year. The control is no aid commitment reported as `0`, and receiving aid is the treatment reported as `1`.  Said differently, I lag the treatment variabel to make it so that for a given session n, a  country is counted as being in the control group if and only if it received a commitment for aid in the the year before that session. Lagging the time of the of the commitment by one year is to provide the opportunity to observe an effect of treatment, whose effect's we might miss if we weren't to lag treatment. 
+
+My dependent variable is`change_one_before` is a numeric variable describing the change in foreign policy alignment with the United States from the previous year to the current year. For a given country in session n we can calculate the difference in how that countries alignment with the United States has changed from the previous session, n-1. There is room for some confusion that should be preempted, an increase in alignment would be indicated by a negative value for `change_one_before`, because this would indicate a decrease in the distance between the foreign policy preferences of the US and a given country. 
+
+To calculate the difference in differences we can then first take the average change among all countries in the control group and subtract it from the average change of all countries in the treatment group. This gives us an estimated average treatment effect. We can also run a regression of the values 
 
 I work under the assumption that in a given session all countries will experience, on average parallel trends through time. Thus, if we observe a decrease in the distance from the USA for countries that are in the treatment group that is relatively higher than the decrease that we observe for those in the treatment, this would be evidence for my hypothesis. That is a statistically significant negative ATE would be evidence for my hypothesis. 
 
@@ -381,6 +385,19 @@ Stastical Significance?
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r}
  
 
@@ -477,7 +494,6 @@ ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0
                                  treat_high = if_else(committed_millions >100, 1, 0),
                                  treat_sig = if_else(committed_millions > 10, 1, 0)
                                 )
-
 
 ## Histogram of Changes
  ideal_aid|> 
