@@ -37,6 +37,26 @@ Data for my independent variable, `aid_committment`, is from  AidData’s Core R
 Plot summarizing the DEPENDENT variable
 ```{r}
 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
 ## Top 10 receivers of aid 
 top10_rec<- ideal_aid|> group_by(country)|>
   summarize(total_aid = sum(commitment_amount_usd_constant_sum))|>
@@ -112,6 +132,10 @@ View(fit)
 coef(fit)
 
 View(ideal_aid)
+
+
+
+
 ```
 
 
@@ -370,15 +394,27 @@ ideal_aid<- ideal_aid|>
          distance_one_after = distance_abs_minus_one,
          distance_two_after = distance_abs_minus_two)
 
-## Mutating for means and difference 
+## Mutating for difference 
 ideal_aid<- ideal_aid|> 
   mutate(change_one_before = distance_one_before - distance_duplicate,
          change_two_before = distance_two_before - distance_duplicate)
+
 ```
 
 ## Results
 
 ```{r}
+
+
+ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
+                                 treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
+                                 treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
+                                 treat_high = if_else(committed_millions >100, 1, 0),
+                                 treat_sig = if_else(committed_millions > 10, 1,0)
+                                )
+
+
+ ## Histogram of Changes
  ideal_aid|> 
   ggplot(mapping = aes(x = change_one_before))+
   geom_histogram()
@@ -387,28 +423,36 @@ ideal_aid<- ideal_aid|>
   ggplot(mapping = aes(x = change_two_before))+
   geom_histogram()
  
-
+## Changes Regressions with dollars
 fit_diff_one <- lm(change_one_before ~ committed_millions, data = ideal_aid)
 fit_diff_two<- lm(change_two_before ~ committed_millions, data = ideal_aid)
 
 summary(fit_diff_one)
 summary(fit_diff_two)
 
-
-ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
-                                 treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
-                                 treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
-                                 treat_high = if_else(committed_millions >100, 1, 0)
-                                 )
-
-View(ideal_treat)
-
-
+## Changes Regression with treatement
 fit_treat<- lm(change_two_before ~ treatment_any, data = ideal_treat)
 fit_treat_all <- lm (change_two_before ~ treatment_any + treat_some + treat_middle + treat_high, data = ideal_treat)
 
 summary(fit_treat)
 summary(fit_treat_all)
+
+## Treatment Means and ATE per session, for any aid 
+ideal_treat|> group_by(session, treatment_any)|>
+  summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
+  pivot_wider(names_from = treatment_any,
+              values_from = mean_change_one)|>
+  mutate(session_ate = `1` - `0`)
+
+
+## Treatment Means and ATE per session for significant aid
+ideal_treat|> group_by(session, treat_sig)|>
+  summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
+  pivot_wider(names_from = treat_sig,
+              values_from = mean_change_one)|>
+  mutate(session_ate = `1` - `0`)|>
+  filter(!is.na(session_ate))
+
 
 
 
