@@ -7,7 +7,7 @@ output:
     self_contained: false
 ---
 
-```{r}
+```{r setup, include = FALSE}
 library(tidyverse)
 library(tidyverse)
 library(dplyr)
@@ -21,8 +21,8 @@ library(countrycode)
 
 ```
 
-## Ideal Points Data Prep
-```{r}
+
+```{r ideal_data_prep, include = FALSE }
 ideal <-  read.csv("data/IdealpointestimatesAll_Jul2023.csv")
 
 ## Adding year from session 
@@ -102,8 +102,8 @@ ideal<- ideal|>
 ```
 
 
-###Prepping Aid Data 
-```{r}
+
+```{r aid_data_prep, include = FALSE}
 ## This is the aggregated data, can choose to use thes disaggregated later, if time 
 aid <- read.csv("data/AidDataCoreDonorRecipientYear_ResearchRelease_Level1_v3.0.csv")
 
@@ -125,7 +125,7 @@ aid_us <- aid_us |> mutate(year_match = year + 1)
 
 ```
 
-```{r testingnamees, eval = FALSE}
+```{r testing_name_conversion, include = FALSE}
 ## Testing Names, there are no names that are ambiguously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
 unique(aid_us_test$recipient)
 unique_names <- unique(ideal$Countryname) ## Possible problem  using ideal
@@ -137,38 +137,7 @@ cart|> filter(Countryname == "Serbia")
 ```
 
 
-```{r dataglance, eval = FALSE}
-
-## Familiarizing Data.
-aid_us|> ggplot(mapping = aes( x = year, y = commitment_amount_usd_constant_sum ))+
-  geom_point()
-
-country_amount <-aid_us |> 
-   group_by(year_match)|> 
-   summarize(num_countries  = length(unique(country_cown)),
-             total_given = sum(commitment_amount_usd_constant_sum)) 
-  
-aid_us |>
-  ggplot(mapping = aes(x = as.factor(year_match),
-                               y = commitment_amount_usd_constant_sum) )+
-  geom_boxplot()+
-  scale_y_log10()
-
-country_amount|>
-  ggplot(mapping = aes(x = as.factor(year_match),
-                       y = num_countries))+
-  geom_line()
-
-
-country_amount|>
-  ggplot(mapping = aes(x = year_match,
-                       y = total_given))+
-  geom_line()
-```
-
-
-## Merging Aid and Ideal 
-```{r}
+```{r joining_aid_ideal}
 ##Checking that UN is unique? Good. 
 aid_us|>
   count(country_cown, year_match) |>
@@ -204,9 +173,12 @@ ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0
                                  treat_bil = if_else(committed_millions > 1000, 1, 0),
                                  treat_sig = if_else(committed_millions > 10, 1, 0)
                                 )
+
+## Sub-setting to the data that we will actually use,  
 ideal_treat_fil<- ideal_treat |>filter(session == 29:69)
 
 ```
+
 
 
 ## 1 Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs)
@@ -341,42 +313,14 @@ ideal_treat_fil|>
   geom_histogram()
 
 ## Using multiple variables, multiple levels of aid
-fit_treat_all <- lm (change_one_before ~ treatment_any + treat_some + treat_middle + treat_high, data = ideal_treat_fil)
+fit_treat_all <- lm (change_one_before ~ treatment_any, data = ideal_treat_fil)
 summary(fit_treat_all)
 
+fit_treat_all_multi <- lm (change_one_before ~ treatment_any + treat_some + treat_middle + treat_high, data = ideal_treat_fil)
+summary(fit_treat_all_multi)
 
 ```
 
-
-
-### Further Analysis 
-```{r}
-## Density Chart for ATE Table
-ate_table_longer|> 
-  mutate(treatment = as.factor(treatment))|>
-  ggplot( mapping = aes(x = change_one_before,
-                        fill = treatment,
-                        color =  treatment))+
-  geom_density(alpha = 0.3)
-
-
-##Distribution Charts for ATE Table 
-ate_table_longer|> 
-  mutate(treatment = as.factor(treatment))|>
-  ggplot( mapping = aes(x = change_one_before,
-                        fill = treatment,
-                        color =  treatment))+
-  geom_histogram()
-
-
-
-##Whisker Charts
-ggplot(data = midwest,
-       mapping = aes(x = percbelowpoverty,
-                     fill = state, color = state)) +
-  geom_density(alpha = 0.3)
-
-```
 
 
 ## Conclusion a brief (one paragraph) concluding section that summarizes your results, assesses the extent to which you find support for your hypothesis, describes limitations of your analysis and threats to inference, and states how your analysis could be improved (e.g., improved data that would be useful to collect).1 paragraph (i) summarizing results and assessing the extent to which you find support for your hypothesis; (ii) describing limitations of the analysis and threats to inference (missing data, confounding, etc), and stating how you could improve your analysis if you had more time/money. (2pts)
@@ -970,6 +914,60 @@ test_2<- ideal_treat|> group_by(session, treat_sig)|>
 mean(test_2$session_ate)
 ```
 
+```{r dataglance, eval = FALSE}
+
+## Familiarizing Data.
+aid_us|> ggplot(mapping = aes( x = year, y = commitment_amount_usd_constant_sum ))+
+  geom_point()
+
+country_amount <-aid_us |> 
+   group_by(year_match)|> 
+   summarize(num_countries  = length(unique(country_cown)),
+             total_given = sum(commitment_amount_usd_constant_sum)) 
+  
+aid_us |>
+  ggplot(mapping = aes(x = as.factor(year_match),
+                               y = commitment_amount_usd_constant_sum) )+
+  geom_boxplot()+
+  scale_y_log10()
+
+country_amount|>
+  ggplot(mapping = aes(x = as.factor(year_match),
+                       y = num_countries))+
+  geom_line()
+
+
+country_amount|>
+  ggplot(mapping = aes(x = year_match,
+                       y = total_given))+
+  geom_line()
+```
+
+### Further Analysis 
+```{r}
+## Density Chart for ATE Table
+ate_table_longer|> 
+  mutate(treatment = as.factor(treatment))|>
+  ggplot( mapping = aes(x = change_one_before,
+                        fill = treatment,
+                        color =  treatment))+
+  geom_density(alpha = 0.3)
+
+
+##Distribution Charts for ATE Table 
+ate_table_longer|> 
+  mutate(treatment = as.factor(treatment))|>
+  ggplot( mapping = aes(x = change_one_before,
+                        fill = treatment,
+                        color =  treatment))+
+  geom_histogram()
 
 
 
+##Whisker Charts
+ggplot(data = midwest,
+       mapping = aes(x = percbelowpoverty,
+                     fill = state, color = state)) +
+  geom_density(alpha = 0.3)
+
+```
