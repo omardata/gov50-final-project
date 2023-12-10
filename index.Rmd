@@ -316,6 +316,8 @@ plus_two <- ideal_aid|>
   group_by(ccode, session)|>
   select(ccode, session, distance_abs)|>
   mutate(session = session + 2)
+
+
 ```
 
 
@@ -340,10 +342,9 @@ plus_two <- ideal_aid|>
   group_by(ccode, session)|>
   select(ccode, session, IdealPointAll)|>
   mutate(session = session + 2)
-```
 
 ```{r}
-## Adding new colums for other years
+### Adding new colums for other years
 ideal_aid <- ideal_aid|> left_join(minus_one, 
                       by = join_by(ccode, session),
                       suffix =  c("", "_minus_one"))
@@ -371,8 +372,51 @@ ideal_aid<- ideal_aid|>
 
 ## Mutating for means and difference 
 ideal_aid<- ideal_aid|> 
-  mutate(one_diff = distance_one_before - ideal_duplicate,
-         two_diff = distance_two_before - ideal_duplicate)
+  mutate(change_one_before = distance_one_before - distance_duplicate,
+         change_two_before = distance_two_before - distance_duplicate)
+```
+
+## Results
+
+```{r}
+ ideal_aid|> 
+  ggplot(mapping = aes(x = change_one_before))+
+  geom_histogram()
+
+ ideal_aid|> 
+  ggplot(mapping = aes(x = change_two_before))+
+  geom_histogram()
+ 
+
+fit_diff_one <- lm(change_one_before ~ committed_millions, data = ideal_aid)
+fit_diff_two<- lm(change_two_before ~ committed_millions, data = ideal_aid)
+
+summary(fit_diff_one)
+summary(fit_diff_two)
+
+
+ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
+                                 treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
+                                 treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 1000),1,0),
+                                 treat_high = if_else(committed_millions >1000, 1, 0)
+                                 )
+
+
+
+
+
+
+
+
+
+
+View(ideal_treat)
+
+
+
+
+```
+
 
 
 
@@ -382,11 +426,9 @@ ideal_aid<- ideal_aid|>
 
 
 
-```
 
 
 
-```
 
 
 
