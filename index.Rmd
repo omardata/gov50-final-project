@@ -204,7 +204,7 @@ ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0
                                  treat_bil = if_else(committed_millions > 1000, 1, 0),
                                  treat_sig = if_else(committed_millions > 10, 1, 0)
                                 )
-
+ideal_treat_fil<- ideal_treat |>filter(session == 29:69)
 
 ```
 
@@ -263,8 +263,7 @@ My first and primary analysis is simply taking any commitment of aid as treatmen
 
 However, for countries in the treatment group the model is rather clear of its prediction. The main  coeficient of interest is negative indicating that for a country that has received any amount of aid we should expect to see the distance between that country and the United States. More specifically we should expect to see a decrease in the distance of approximately ___. 
 
-
-Plot of anlysis
+### Main Analysis
 
 ```{r}
 ## Creating table for ATE in a given session
@@ -312,7 +311,16 @@ ate_table_longer_num|>
               se = FALSE
               )
 
-## Density Chart
+
+
+
+```
+
+
+### Further Analysis 
+
+```{r}
+## Density Chart for ATE Table
 ate_table_longer|> 
   mutate(treatment = as.factor(treatment))|>
   ggplot( mapping = aes(x = change_one_before,
@@ -321,15 +329,16 @@ ate_table_longer|>
   geom_density(alpha = 0.3)
 
 
-##Distribution Charts
+##Distribution Charts for ATE Table 
 ate_table_longer|> 
   mutate(treatment = as.factor(treatment))|>
   ggplot( mapping = aes(x = change_one_before,
                         fill = treatment,
                         color =  treatment))+
-  geom_histogram()+
+  geom_histogram()
 
 ##Whisker Charts
+
 
 
 
@@ -345,11 +354,19 @@ ggplot(data = midwest,
 ate_fit <- lm(change_one_before ~ treatment, data = ate_table_longer)
 
 
+
+##Distribution Chart for all observered country changes
+ideal_treat_fil|> 
+  mutate(treatment_any = as.factor(treatment_any))|>
+  ggplot(mapping = aes(x = change_one_before,
+                        fill = treatment_any,
+                        color =  treatment_any))+
+  geom_histogram()
+
+
 ```
 
 
-
-Reggression output 
 
 
 ```{r}
