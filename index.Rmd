@@ -293,6 +293,31 @@ View(ideal_aid)
 ## Adding group for aid determination.. is there some way of showing this? 
 
 
+```
+
+
+```{r}
+minus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session - 1)
+
+minus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session - 2)
+ 
+plus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session + 1 )
+
+plus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session + 2)
+```
+
 
 
 ## Finding prev years into rows
@@ -336,30 +361,29 @@ ideal_aid <- ideal_aid|> left_join(plus_two,
                       by = join_by(ccode, session),
                       suffix =  c("", "_plus_two"))
 
+## Ordering and new titles for columns 
 ideal_aid<- ideal_aid|> 
-  mutate(ideal_two_before = IdealPointAll_plus_two,
-         ideal_one_before = IdealPointAll_plus_one,
-         ideal_duplicate = IdealPointAll,
-         ideal_one_after = IdealPointAll_minus_one,
-         ideal_two_after = IdealPointAll_minus_two)
+  mutate(distance_two_before = distance_abs_plus_two,
+         distance_one_before = distance_abs_plus_one,
+         distance_duplicate = distance_abs,
+         distance_one_after = distance_abs_minus_one,
+         distance_two_after = distance_abs_minus_two)
+
+## Mutating for means and difference 
+ideal_aid<- ideal_aid|> 
+  mutate(one_diff = distance_one_before - ideal_duplicate,
+         two_diff = distance_two_before - ideal_duplicate)
+
+
+
+
+## Doing this for distances not just ideal points... changes in ditances 
+
+
+
+
 ```
 
-ideal_aid <- ideal_aid|> left_join(minus_one, 
-                      by = join_by(ccode, session),
-                      suffix =  c("", "_minus_one"))
-
-ideal_aid <- ideal_aid|> left_join(minus_two, 
-                      by = join_by(ccode, session),
-                      suffix =  c("", "_minus_two"))
-
-ideal_aid <- ideal_aid|> left_join(plus_one, 
-                      by = join_by(ccode, session),
-                      suffix =  c("", "_plus_one"))
-
-
-ideal_aid <- ideal_aid|> left_join(plus_two, 
-                      by = join_by(ccode, session),
-                      suffix =  c("", "_plus_two"))
 
 
 ```
