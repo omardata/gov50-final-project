@@ -71,7 +71,7 @@ summary(ideal_treat$change_one_before)
   
 ```
 
-My research design employs a differences-in-differences approach. I treat the the reception of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. So  no aid commitment in is the control, and receiving aid is the treatment. More specifically I lag the aid commitment to make it so that for a given session n, a  country is counted as being in the control group if and only if it received a commitment for aid in the the year before that session. Lagging the time of the of the commitment by one year is to preempt possible ___. 
+My research design employs a differences-in-differences approach. I treat the the commitment of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. So  no aid commitment in is the control, and receiving aid is the treatment. More specifically I lag the aid commitment to make it so that for a given session n, a  country is counted as being in the control group if and only if it received a commitment for aid in the the year before that session. Lagging the time of the of the commitment by one year is to preempt possible ___. 
 
 For a given country in session n we can calculate the difference in how that alignment with the United States has changed from the previous session, n-1. This gives us a value for the variable `change_one_before`, which is the before and after difference for a given country. To calculate the difference in differences we can then first take the average change among all countries in the control group and subtract it from the average change of all countries in the treatment group. This gives us an estimated average treatment effect. 
 
@@ -81,38 +81,74 @@ I work under the assumption that in a given session all countries will experienc
 In summary my findings are that ____
 on average the commitment of bilateral aid from the US to other countries is correlated with a foreign-policy preference convergence between the US and those countries. REWORD.
 
+My first and primary analysis is simply takin any commitment of aid as treatment. Using a difference in differences approach for the average chang from the prvious year to the current year, we find that a country in the treatment group is on average predicted to have a decrease in their distance from the United States. The regression aanlysis on the treatment as a categorical predictor yields two coefficients. One is an intercept which represents the models prediction for the baseline group, that is the control. The value of the intercept is positive at __ indicating that on average countries in the control were slighly more likely to increase their distancce from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coeficient is not statistically signifcant, and in fact is highly arebitrary. For countries in the control this model is rather uninformative. 
 
-My first and primary analysis is simply of the provision of any aid counting as treatment. For this analysis I get a total of 
+However, for countries in the treatment group the model is rather clear of its prediction. The main  coeficient of interest is negative indicating that for a country that has received any amount of aid we should expect to see the distance between that country and the United States. More specifically we should expect to see a decrease in the distance of approximately ___. 
+
+
+PLOT of analysis. Which sort of plot.. Bar? 
+
+
+Reggression output 
+
+
 ```{r}
 
 ##Simple Population Means
 ideal_treat|> group_by(treatment_any)|> 
   summarize(total_change = mean(change_one_before, na.rm = TRUE))
 
-ideal_treat|> group_by(treat_sig)|> 
-  summarize(total_change = mean(change_one_before, na.rm = TRUE))
-
-## Getting just country data for one session 
+## Getting just country data for one session, example.
 ideal_treat|> 
   filter(session == 29)|>
   select(session, Countryname, committed_millions, treatment_any, IdealPointAll, idealpoint_us, distance_abs, change_one_before)
 
 ## Treatment Means and ATE per session, for any aid
-ideal_treat|> group_by(session, treatment_any)|>
+test<- ideal_treat|> group_by(session, treatment_any)|>
   summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
   pivot_wider(names_from = treatment_any,
               values_from = mean_change_one)|>
   mutate(session_ate = `1` - `0`)|>
   filter(!is.na(session_ate))
 
+ ## Mean across sessions, any aid 
+mean(test$session_ate)
+
+##Regression with treatment, any aid 
+fit_treat<- lm(change_one_before ~ treatment_any, data = ideal_treat)
+summary(fit_treat)
+```
+
+
+
+
+
+```{r}
+##
+fit_treat_all <- lm (change_two_before ~ treatment_any + treat_some + treat_middle + treat_high, data = ideal_treat)
+
+summary(fit_treat)
+summary(fit_treat_all)
+
+
+
+## Simple means for sig aid
+ideal_treat|> group_by(treat_sig)|> 
+  summarize(total_change = mean(change_one_before, na.rm = TRUE))
 
 ## Treatment Means and ATE per session for significant aid
-ideal_treat|> group_by(session, treat_sig)|>
+test_2<- ideal_treat|> group_by(session, treat_sig)|>
   summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
   pivot_wider(names_from = treat_sig,
               values_from = mean_change_one)|>
   mutate(session_ate = `1` - `0`)|>
   filter(!is.na(session_ate))
+
+## Mean across sessions, sig aid
+mean(test_2$session_ate)
+```
+
+
 
 
 ```
@@ -400,38 +436,8 @@ ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0
   ggplot(mapping = aes(x = change_two_before))+
   geom_histogram()
  
-## Changes Regressions with dollars
-fit_diff_one <- lm(change_one_before ~ committed_millions, data = ideal_aid)
-fit_diff_two<- lm(change_two_before ~ committed_millions, data = ideal_aid)
-
-summary(fit_diff_one)
-summary(fit_diff_two)
-
-## Changes Regression with treatement
-fit_treat<- lm(change_two_before ~ treatment_any, data = ideal_treat)
-fit_treat_all <- lm (change_two_before ~ treatment_any + treat_some + treat_middle + treat_high, data = ideal_treat)
-
-summary(fit_treat)
-summary(fit_treat_all)
-
-## Treatment Means and ATE per session, for any aid 
-ideal_treat|> group_by(session, treatment_any)|>
-  summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
-  pivot_wider(names_from = treatment_any,
-              values_from = mean_change_one)|>
-  mutate(session_ate = `1` - `0`)
 
 
-## Treatment Means and ATE per session for significant aid
-ideal_treat|> group_by(session, treat_sig)|>
-  summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
-  pivot_wider(names_from = treat_sig,
-              values_from = mean_change_one)|>
-  mutate(session_ate = `1` - `0`)|>
-  filter(!is.na(session_ate))
-
-
-ideal_treat|> ggplot(mapping = aes( ))
 
 
 
