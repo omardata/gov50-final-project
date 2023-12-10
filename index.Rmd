@@ -12,25 +12,29 @@ library(tidyverse)
 ```
 
 ## 1 Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs)
-This paper will explore the relationship between a county's votes in an international organization and the amount of aid that country receives from the United States. There has been some evidence for the relationship of using the IMF and world bank to buy votes (reference Dreher and Strun 2012). What my paper is exploring is more a measure of state preferences as measured from the votes in the United Nations).  That is I will look at how on average astate's preferences relate to the amount of aid that it receives from the United States. sLooking not only at how does a country buy votes, but how much a state might come to align with the US through receiving aid. There is also this paper? Does it use ideal points? (Dreher, Axel, P. Nunnenkamp, and R. Thiele. 2008. ‘‘Does US Aid Buy UN General Assembly Votes? A Disaggregated Analysis.’’ Public Choice 136 (1): 139-64.) Dreher et al explicitly state the particular suitability of their ideal point estimates for analyzing the influence of aid, thus this is an interesting project that is taking this cool data from a statistical model and using it to attempt to learn about a particularly interesting and well-suited question. 
- 
-Generally explaining the voting patterns of member states in the international organizations is an object of interest to the international relations theorist. I will look at how well a state's level of aid from the USA can explain that state's level of voting coincidence with the US in the United Nations General Assembly. While voting coincidence is one things it is really state preference that I am interested in.
+This paper will explore the relationship between a country's foreign-policy preferences and the amount of aid that country receives from the United States. Ultimately the question that interets me is does US provision of aid make the recipients of aid more inclined to the support of the US-led liberal world order? 
 
-My  research question is:  Are the recipients of US aid more inclined to US-aligned voting in the UNGA? How might this aid change their state preference.
+There has been some evidence for US practice of using the IMF and World Bank to buy support from other member states for its position on votes in the United Nations General Council (reference Dreher and Strun 2012). However interesting  this sort of analysis is, my paper aims to do something a bit different than a focus on vote buying. Some like  Dreher, Axel, P. Nunnenkamp, and R. Thiele. 2008 (‘‘Does US Aid Buy UN General Assembly Votes? A Disaggregated Analysis.’’ Public Choice 136 (1): 139-64.)) explore the question of how aid might be a means of buying support for votes. While they give a robust treatement of the quesiton regarding the effects of different types of aid, they are still interested in simply in the voting coincidence of the US and a recipient of its aid. 
 
-My central hypothesis is that through time, recipients of US aid vote come to vote more frequently in line with the US.T his is interesting, as a hypothesis because ___.
-
-A second hypothesis is that recipients of greater levels of US aid are more likely to vote in-line with the US than recepeints of lower amounts of US aid. 
-
-The null hypothesis is that there any difference between the measure of US-voting coincidence and the amount of aid that a country receives is due to pure chance. 
+My approach is a bit different, and focuses not on the effect of aid on voting coincidence, but on state-preference. My  research question is this: Do the state preferences of countries that receive US aid become more aligned with those of the US? My central hypothesis is that when the US gives a country aid, it becomes more likely that the state preferences between these two countries align. A second hypothesis that I am interested in testing is whether or not the  recipients of greater levels of US aid are more likely to vote in-line with the US than recipients of lower amounts of US aid. The null hypothesis is that there any difference between the measure of US-voting coincidence and the amount of aid that a country receives is due to random chance. 
 
 ## 2 Data Section ---------- Briefly describes the data source, describes how the key dependent and independent variables are measured (e.g., a survey, statistical model, or expert coding), and also produces a plot that summarizes the dependent variable) (2-3 paragraphs)
 
-This paper relies on two data sources, one for the dependent variable and one for the independent variable.
+In order to analyze this effect I use two pretty cool data sets, one for the dependent variable and one for the independent variable.
 
-My dependent variable, `distance`, is calculated from data of estimated measures of state preference as provided by Dreher et. all 2008. This numeric estimate of state preference that Dreher et al provide is the result of a statistical model derived from Eric Voeten's data on member-state votes in the United Nations General Assembly. This numeric measure of state-preference is given at a state/session level, that is it provides a single measure of state preference as calculated from United Nations General Assembly Voting Data for a given country, in a given year. More specifically this estimate is a measure of "The resulting estimates consistently capture the position of states vis-a`-vis a US-led liberal order."(pg 431)
+My dependent variable, ` ____ `, is calculated from estimated measures of state preference provided by Dreher et. all 2008. This numeric estimate of state preference that Dreher et al provide is the result of a statistical model derived from Eric Voeten's data on member-state votes in the United Nations General Assembly. This numeric measure of state-preference is given at a state/session level, that is it provides a single measure of state preference as calculated from United Nations General Assembly Voting Data for a given country, in a given year. This ideal point data is more than just measure of state voting coincidence with the US-- this data set is one of the things that makes this paper interesting. This ideal point estimate is ___ and ___ and ____. Ultimately, their ideal sestimate is a measure of "consistently capture the position of states vis-a`-vis a US-led liberal order."(pg 431). Dreher et al explicitly state the suitability of their ideal point estimates for analyzing the influence of aid, thus this is an interesting project that is taking this cool data from a statistical model and using it to attempt to learn about the dynmaic that unfolds with US aid. 
 
-My dependent variable `distance` is a measure for how aligned two state's preferences are.The alignment of state preference for any pair of countries in a given session can be estimated by taking each country's ideal-point estimate in the same session,  subtracting them - that is finding the "distance" between these two points,and taking the absolute value. Thus, my dependent variable `distance` is a measure of the alignment of a given country  with the US in a given session, arrived at by subtracting the value of the a given countries ideal-point estimate for a particular session from the USA's ideal-point estimate for that same session. The value for the US in any given year is zero, because the US displayed voting patterns identical to itself. A low value for `distance` indicates higher alignment in state preference.
+My dependent variable `change_distance_one` is a measure of how a  countries preference alignment with the US has changed from the past session to the current session.   
+
+
+
+The variable `distance_abs` is a measure of the  alignment of state preference for a pair of countries in a given session. This varibable is calculated by taking each country's ideal-point estimate in the same session,  subtracting them - that is finding the "distance" between these two points,and taking the absolute value. Thus, this  variable `distance_abs` is a measure of the alignment of a given country  with the US in a given session, arrived at by subtracting the value of the a given countries ideal-point estimate for a particular session from the USA's ideal-point estimate for that same session. For example, the value for the US in any given session is zero, because the US displayed voting patterns identical to itself. The closert to zero a value is for `distance`, the higher alignment in state preference.
+
+
+
+
+
+
 
 Data for my independent variable, `aid_committment`, is from  AidData’s Core Research Release Version 3.0. This data provides aggregated data (but also, they provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported in __ and is given in constant dollars ($USD for 2011) to  allow for time-series analysis. This variable is also reported at a recipient-year level, meaning that it provides the amount that was committed to a given state in a given year. In order to perform my analysis, I lag the aid year, in order to allow for that aid to take an effect.
 
@@ -41,78 +45,11 @@ Plot summarizing the DEPENDENT variable
 
 
 
+Dependent: difference from previous years.
+Independent: was aid received in the past year or not? There are two  
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-
-## Top 10 receivers of aid 
-top10_rec<- ideal_aid|> group_by(country)|>
-  summarize(total_aid = sum(commitment_amount_usd_constant_sum))|>
-  top_n(10, total_aid)|> 
-  pull(country)
-
-## Plotting top 10 recievers of aid 
-ideal_aid|>
-  filter(country %in% top10_rec)|>
-  ggplot(mapping = aes(x = year, y = distance))+
-    geom_line(mapping = aes(color = country))
-
-##Distributions of distances, all  through time
-ideal_aid|>
-  ggplot(mapping = aes(x = distance_abs))+
-  geom_histogram()
-
-##What causes a big drop in the data? Are there any changes that are bigger than others? 
-ideal_aid |> group_by(ccode, session)|>
-  summarize(mean_prev_years = sum(idealpin ))
-  mutate(change_diff =  )
-
-
-                      
-
-
-ideal_aid<- ideal_aid |> 
-  select(!session_minus_one)
-
-
-
-## W/O USA
-ideal_wo_us <- ideal|> 
-  group_by(country_cown, year_match)|>
-  select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
-  filter(!country_cown == 2)
-
-## US Values only
-ideal_onlyus <- ideal|>
-  filter(country_cown == 2)|>
-  select(session, IdealPointAll)|>
-  mutate(idealpoint_us = IdealPointAll)|>
-  select(!IdealPointAll)
-
-## ideal now has US value
-ideal<- ideal|> 
-  left_join(ideal_onlyus, by = join_by(session))
-
-ideal <- ideal|> 
-  mutate(distance = idealpoint_us - IdealPointAll)|>
-  mutate(distance_abs = abs(distance))
-
-View(ideal_us)
-
-
-```
 
  
 ## Results--------- plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
@@ -410,11 +347,11 @@ ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0
                                  treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
                                  treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
                                  treat_high = if_else(committed_millions >100, 1, 0),
-                                 treat_sig = if_else(committed_millions > 10, 1,0)
+                                 treat_sig = if_else(committed_millions > 10, 1, 0)
                                 )
 
 
- ## Histogram of Changes
+## Histogram of Changes
  ideal_aid|> 
   ggplot(mapping = aes(x = change_one_before))+
   geom_histogram()
@@ -452,6 +389,9 @@ ideal_treat|> group_by(session, treat_sig)|>
               values_from = mean_change_one)|>
   mutate(session_ate = `1` - `0`)|>
   filter(!is.na(session_ate))
+
+
+ideal_treat|> ggplot(mapping = aes( ))
 
 
 
@@ -659,4 +599,69 @@ View(per_country_party)
 
 
 
+
+
 ```
+
+
+
+
+
+
+```{r}
+
+## Top 10 receivers of aid 
+top10_rec<- ideal_aid|> group_by(country)|>
+  summarize(total_aid = sum(commitment_amount_usd_constant_sum))|>
+  top_n(10, total_aid)|> 
+  pull(country)
+
+## Plotting top 10 recievers of aid 
+ideal_aid|>
+  filter(country %in% top10_rec)|>
+  ggplot(mapping = aes(x = year, y = distance))+
+    geom_line(mapping = aes(color = country))
+
+##Distributions of distances, all  through time
+ideal_aid|>
+  ggplot(mapping = aes(x = distance_abs))+
+  geom_histogram()
+
+##What causes a big drop in the data? Are there any changes that are bigger than others? 
+ideal_aid |> group_by(ccode, session)|>
+  summarize(mean_prev_years = sum(idealpin ))
+  mutate(change_diff =  )
+
+
+                    
+ideal_aid<- ideal_aid |> 
+  select(!session_minus_one)
+
+
+
+## W/O USA
+ideal_wo_us <- ideal|> 
+  group_by(country_cown, year_match)|>
+  select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
+  filter(!country_cown == 2)
+
+## US Values only
+ideal_onlyus <- ideal|>
+  filter(country_cown == 2)|>
+  select(session, IdealPointAll)|>
+  mutate(idealpoint_us = IdealPointAll)|>
+  select(!IdealPointAll)
+
+## ideal now has US value
+ideal<- ideal|> 
+  left_join(ideal_onlyus, by = join_by(session))
+
+ideal <- ideal|> 
+  mutate(distance = idealpoint_us - IdealPointAll)|>
+  mutate(distance_abs = abs(distance))
+
+View(ideal_us)
+
+
+```
+
