@@ -11,28 +11,205 @@ output:
 library(tidyverse)
 library(tidyverse)
 library(dplyr)
-install.packages("lubridate")
-install.packages("countrycode")
+##install.packages("lubridate")
+##install.packages("countrycode")
 library(lubridate)
 library(countrycode)
 
-load("~/Desktop/GOV 50/Projects/Final/final_project/data/un_votes.RData") ## 
+##load("~/Desktop/GOV 50/Projects/Final/final_project/data/un_votes.RData")
 
-ideal <-  read.csv("data/IdealpointestimatesAll_Jul2023.csv")
-lead <- read_dta("data/WhyLeadersFightLEADDataset_updated.dta")
-presidents <- read.csv("data/presidents.csv")
-
-presidents <- presidents|>
-  select(Presidency, President, Took.office, Left.office, Party)
-
-View(ideal)
-View(completeVotes)
-View(presidents)
-## Create the presidents tibble for dates. 
-
-completeVotes|> summary()
 
 ```
+
+
+
+## Ideal Points Data Prep
+```{r}
+ideal <-  read.csv("data/IdealpointestimatesAll_Jul2023.csv")
+
+## Adding year from session 
+ideal <- ideal|> mutate( country_cowc = countrycode(ccode, origin = 'cown' , destination = 'cowc'),
+                         country_cown = ccode,
+                         year_match = session + 1945)
+## W/O USA
+ideal_wo_us <- ideal|> 
+  group_by(country_cown, year_match)|>
+  select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
+  filter(!country_cown == 2)
+
+## US Values only
+ideal_onlyus <- ideal|>
+  filter(country_cown == 2)|>
+  select(session, IdealPointAll)|>
+  mutate(idealpoint_us = IdealPointAll)|>
+  select(!IdealPointAll)
+
+## ideal now has US value
+ideal<- ideal|> 
+  left_join(ideal_onlyus, by = join_by(session))
+
+ideal <- ideal|> 
+  mutate(distance = idealpoint_us - IdealPointAll)|>
+  mutate(distance_abs = abs(distance))
+
+
+##Familiarizing Self w data
+###ideal|> ggplot(mapping = aes(x = distance_abs))+geom_histogram()
+##ideal|> ggplot(mapping = aes(x = distance))+geom_histogram()
+
+## New objects for joining to ideal values of ideal point from previous years
+minus_one <- ideal|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session - 1)
+
+minus_two <- ideal|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session - 2)
+ 
+plus_one <- ideal|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session + 1 )
+
+plus_two <- ideal|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session + 2)
+
+
+## Adding new columns of sideal values of ideal point from previous years two years
+
+ideal <- ideal|> left_join(plus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_one"))
+
+
+ideal <- ideal|> left_join(plus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_two"))
+
+## Ordering and new titles for columns 
+ideal<- ideal|> 
+  mutate(distance_two_before = distance_abs_plus_two,
+         distance_one_before = distance_abs_plus_one,
+         distance_duplicate = distance_abs)
+
+## Mutating for difference 
+ideal<- ideal|> 
+  mutate(change_one_before = distance_one_before - distance_duplicate,
+         change_two_before = distance_two_before - distance_duplicate)
+
+
+```
+
+
+###Prepping Aid Data 
+```{r}
+## This is the aggregated data, can choose to use thes disaggregated later, if time 
+aid <- read.csv("data/AidDataCoreDonorRecipientYear_ResearchRelease_Level1_v3.0.csv")
+
+## Got correct number of row? Yes. 
+
+##gives data from 1973 to 2013 
+aid_us <- aid|>
+  filter(donor == "United States")
+
+##Change from  recepient name to COW character country code, add COW numeric code for matching w Ideal point data
+aid_us <- aid_us|> mutate( country = countrycode(recipient, origin = 'country.name', destination = 'cowc'))
+aid_us <- aid_us|> mutate( country_cown = countrycode(country, origin = 'cowc', destination = 'cown'))
+
+aid_us_test<- aid_us |> filter(is.na(country_cown))
+
+## Aid US, changing date, PLUS on year. In order to use previous year's aid commitments to the vote year
+aid_us <- aid_us |> mutate(year_match = year + 1)
+
+
+```
+
+```{r testingnamees, eval = FALSE}
+
+
+## Testing Names, there are no names that are ambiguously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
+unique(aid_us_test$recipient)
+unique_names <- unique(ideal$Countryname) ## Possible problem  using ideal
+unique_names <- enframe(unique_names)
+View(unique_names)
+cart|> filter(Countryname == "Serbia")
+
+
+```
+
+
+
+```{r dataglance, eval = FALSE}
+
+## Familiarizing Data.
+aid_us|> ggplot(mapping = aes( x = year, y = commitment_amount_usd_constant_sum ))+
+  geom_point()
+
+country_amount <-aid_us |> 
+   group_by(year_match)|> 
+   summarize(num_countries  = length(unique(country_cown)),
+             total_given = sum(commitment_amount_usd_constant_sum)) 
+  
+aid_us |>
+  ggplot(mapping = aes(x = as.factor(year_match),
+                               y = commitment_amount_usd_constant_sum) )+
+  geom_boxplot()+
+  scale_y_log10()
+
+country_amount|>
+  ggplot(mapping = aes(x = as.factor(year_match),
+                       y = num_countries))+
+  geom_line()
+
+
+country_amount|>
+  ggplot(mapping = aes(x = year_match,
+                       y = total_given))+
+  geom_line()
+```
+
+
+## Merging Aid and Idea 
+```{r}
+
+##Checking that UN is unique? Good. 
+aid_us|>
+  count(country_cown, year_match) |>
+  filter(n > 1)
+
+## Remove data for country_cown is N/A
+aid_us <-  aid_us|>filter(!is.na(country_cown))
+
+## Check that ideal point is unique? Good.
+ideal|>
+  count(country_cown, year_match) |>
+  filter(n > 1)
+
+##Joined Aid and Ideal
+ideal_aid <- ideal|> 
+  left_join(aid_us, join_by(country_cown, year_match))
+
+## adding column for zeros instead of NAs
+ideal_aid<- ideal_aid |>
+  mutate(committed = if_else( is.na(commitment_amount_usd_constant_sum), 0, commitment_amount_usd_constant_sum ))
+         
+## Adding millions
+ideal_aid<- ideal_aid |>
+  mutate(committed_millions = committed/ 1000000)
+
+View(ideal_aid)
+
+## Adding group for aid determination.. is there some way of showing this? 
+
+
+```
+
+
+
 
 ## 1 Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs)
 This paper will explore the relationship between a country's foreign-policy preferences and the amount of aid that country receives from the United States. Ultimately the question that interets me is does US provision of aid make the recipients of aid more inclined to the support of the US-led liberal world order? 
@@ -87,6 +264,19 @@ However, for countries in the treatment group the model is rather clear of its p
 
 
 PLOT of analysis. Which sort of plot.. Bar? 
+
+```{r}
+
+
+ideal_treat|> group_by(session, treatment_any)|>
+  summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
+  pivot_wider(names_from = treatment_any,
+              values_from = mean_change_one)|>
+  mutate(session_ate = `1` - `0`)|>
+  filter(!is.na(session_ate))|>
+  ggplot(mapping = aes(x = ))
+```
+
 
 
 Reggression output 
@@ -151,7 +341,6 @@ mean(test_2$session_ate)
 
 
 
-```
 
 
 
@@ -189,151 +378,12 @@ Stastical Significance?
 
 
 
-## Ideal Points  
+
+
+
 ```{r}
-## Can use a countries ideal point estimate? 
-## Can use a fraction of the voting decisions? Maybe use the ideal points first, if time think about the raw voting data
-View(ideal)
-
-## Adding year from session 
-ideal <- ideal|> mutate( country_cowc = countrycode(ccode, origin = 'cown' , destination = 'cowc'),
-                         country_cown = ccode,
-                         year_match = session + 1945)
-## W/O USA
-ideal_wo_us <- ideal|> 
-  group_by(country_cown, year_match)|>
-  select(ccode, session, IdealPointAll, Countryname, year_match, country_cown, country_cowc)|>
-  filter(!country_cown == 2)
-
-## US Values only
-ideal_onlyus <- ideal|>
-  filter(country_cown == 2)|>
-  select(session, IdealPointAll)|>
-  mutate(idealpoint_us = IdealPointAll)|>
-  select(!IdealPointAll)
-
-## ideal now has US value
-ideal<- ideal|> 
-  left_join(ideal_onlyus, by = join_by(session))
-
-ideal <- ideal|> 
-  mutate(distance = idealpoint_us - IdealPointAll)|>
-  mutate(distance_abs = abs(distance))
-
-View(ideal)
-
-
-
-## Familiarizing Self w data
-ideal|> ggplot(mapping = aes(x = distance_abs))+
-  geom_histogram()
-
-ideal|> ggplot(mapping = aes(x = distance))+
-  geom_histogram()
-
-```
-
-
-###Prepping Aid Data 
-```{r}
-## This is the aggregated data, can choose to use thes disaggregated later, if time 
-aid <- read.csv("data/AidDataCoreDonorRecipientYear_ResearchRelease_Level1_v3.0.csv")
-aid
-## Got correct number of row? Yes. 
-
-View(aid_us)
-
-##gives data from 1973 to 2013 
-aid_us <- aid|>
-  filter(donor == "United States")
-
-##Change from  recepient name to COW character country code, add COW numeric code for matching w Ideal point data
-aid_us <- aid_us|> mutate( country = countrycode(recipient, origin = 'country.name', destination = 'cowc'))
-aid_us <- aid_us|> mutate( country_cown = countrycode(country, origin = 'cowc', destination = 'cown'))
-
-aid_us_test <- aid_us |> filter(is.na(country_cown))
-
-## Testing Names, there are no names that are ambigously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
-unique(aid_us_test$recipient)
-unique_names <- unique(cart$Countryname)
-unique_names <- enframe(unique_names)
-View(unique_names)
-cart|> filter(Countryname == "Serbia")
-
-## Aid US, changing date, PLUS on year. In order to use previous year's aid commitments to the vote year
-aid_us <- aid_us |> mutate(year_match = year + 1)|> select(!year_lagged)
-
-## Familiarizing Data.
-aid_us|> ggplot(mapping = aes( x = year, y = commitment_amount_usd_constant_sum ))+
-  geom_point()
-
-country_amount <-aid_us |> 
-   group_by(year_match)|> 
-   summarize(num_countries  = length(unique(country_cown)),
-             total_given = sum(commitment_amount_usd_constant_sum)) 
-  
-
-
-aid_us |>
-  ggplot(mapping = aes(x = as.factor(year_match),
-                               y = commitment_amount_usd_constant_sum) )+
-  geom_boxplot()+
-  scale_y_log10()
-  
-  
-  
-country_amount|>
-  ggplot(mapping = aes(x = as.factor(year_match),
-                       y = num_countries))+
-  geom_line()
-
-
-country_amount|>
-  ggplot(mapping = aes(x = year_match,
-                       y = total_given))+
-  geom_line()
-
  
-```
 
-## Merging Aid and Idea 
-```{r}
-
-##Checking that UN is unique? Good. 
-aid_us|>
-  count(country_cown, year_match) |>
-  filter(n > 1)
-
-## Remove data for country_cown is N/A
-aid_us <-  aid_us|>filter(!is.na(country_cown))
-
-## Check that ideal point is unique? Good.
-ideal|>
-  count(country_cown, year_match) |>
-  filter(n > 1)
-
-##Joined Aid and Ideal
-ideal_aid <- ideal|> 
-  left_join(aid_us, join_by(country_cown, year_match))
-View(ideal_aid)
-
-## adding column for zeros instead of NAs
-ideal_aid<- ideal_aid |>
-  mutate(committed = if_else( is.na(commitment_amount_usd_constant_sum), 0, commitment_amount_usd_constant_sum ))
-         
-## Adding millions
-ideal_aid<- ideal_aid |>
-  mutate(committed_millions = committed/ 1000000)
-
-View(ideal_aid)
-
-## Adding group for aid determination.. is there some way of showing this? 
-
-
-```
-
-
-```{r}
 minus_one <- ideal_aid|> 
   group_by(ccode, session)|>
   select(ccode, session, distance_abs)|>
@@ -354,35 +404,8 @@ plus_two <- ideal_aid|>
   select(ccode, session, distance_abs)|>
   mutate(session = session + 2)
 
-
-```
-
-
-
-## Finding prev years into rows
-minus_one <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session = session - 1)
-
-minus_two <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session = session - 2)
- 
-plus_one <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session = session + 1 )
-
-plus_two <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session = session + 2)
-
-```{r}
 ### Adding new colums for other years
-ideal_aid <- ideal_aid|> left_join(minus_one, 
+ideal_dis <- ideal_aid|> left_join(minus_one, 
                       by = join_by(ccode, session),
                       suffix =  c("", "_minus_one"))
 
@@ -411,6 +434,35 @@ ideal_aid<- ideal_aid|>
 ideal_aid<- ideal_aid|> 
   mutate(change_one_before = distance_one_before - distance_duplicate,
          change_two_before = distance_two_before - distance_duplicate)
+
+
+```
+
+
+
+## Finding prev years into rows
+minus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session - 1)
+
+minus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session - 2)
+ 
+plus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session + 1 )
+
+plus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session + 2)
+
+```{r}
+
 
 ```
 
@@ -709,6 +761,8 @@ ideal <- ideal|>
 View(ideal_us)
 
 
+
+
 ```
 
 
@@ -768,3 +822,46 @@ View(presidents)
 completeVotes|> summary()
 
 ```
+
+
+
+
+
+
+
+
+
+
+```{r editingideal}
+### Adding new colums for other years
+ideal_aid <- ideal_aid|> left_join(minus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_minus_one"))
+
+ideal_aid <- ideal_aid|> left_join(minus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_minus_two"))
+
+ideal_aid <- ideal_aid|> left_join(plus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_one"))
+
+
+ideal_aid <- ideal_aid|> left_join(plus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_two"))
+
+## Ordering and new titles for columns 
+ideal_aid<- ideal_aid|> 
+  mutate(distance_two_before = distance_abs_plus_two,
+         distance_one_before = distance_abs_plus_one,
+         distance_duplicate = distance_abs,
+         distance_one_after = distance_abs_minus_one,
+         distance_two_after = distance_abs_minus_two)
+
+## Mutating for difference 
+ideal_aid<- ideal_aid|> 
+  mutate(change_one_before = distance_one_before - distance_duplicate,
+         change_two_before = distance_two_before - distance_duplicate)
+```
+
