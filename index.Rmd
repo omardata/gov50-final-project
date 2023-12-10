@@ -43,6 +43,10 @@ My approach is a bit different, and focuses not on the effect of aid on voting c
 
 Evidence for an increase in alignment  would be to see a decrease in the distance. Thus evidence for my hypothesis would be to see that following the commitment of aid this distance would decrease, that is we would see a negative change over one year.  
 
+Concept 
+Conceptual definition
+Operational definition 
+
 ## 2 Data Section ---------- Briefly describes the data source, describes how the key dependent and independent variables are measured (e.g., a survey, statistical model, or expert coding), and also produces a plot that summarizes the dependent variable) (2-3 paragraphs)
 
 In order to analyze this effect I use two pretty cool data sets, one for the dependent variable and one for the independent variable.
@@ -69,24 +73,46 @@ summary(ideal_treat$change_one_before)
 
 My research design employs a differences-in-differences approach. I treat the the reception of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. So  no aid commitment in is the control, and receiving aid is the treatment. More specifically I lag the aid commitment to make it so that for a given session n, a  country is counted as being in the control group if and only if it received a commitment for aid in the the year before that session. Lagging the time of the of the commitment by one year is to preempt possible ___. 
 
-
 For a given country in session n we can calculate the difference in how that alignment with the United States has changed from the previous session, n-1. This gives us a value for the variable `change_one_before`, which is the before and after difference for a given country. To calculate the difference in differences we can then first take the average change among all countries in the control group and subtract it from the average change of all countries in the treatment group. This gives us an estimated average treatment effect. 
 
-I work under the assumption that in a given session all countries will experience, on average parallel trends through time. Thus, if we observe a decrease in the distance from the USA for countries that are in the treatment group that is relatively higher than the decrease that we observe for those in the treament, this would be evidence for my hypothesis. That is a statistically significant negative ATE would be evidence for my hypothesis. 
+I work under the assumption that in a given session all countries will experience, on average parallel trends through time. Thus, if we observe a decrease in the distance from the USA for countries that are in the treatment group that is relatively higher than the decrease that we observe for those in the treatment, this would be evidence for my hypothesis. That is a statistically significant negative ATE would be evidence for my hypothesis. 
 
 ## Results--------- plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
+In summary my findings are that ____
+on average the commitment of bilateral aid from the US to other countries is correlated with a foreign-policy preference convergence between the US and those countries. REWORD.
 
-In summary my findings are that on average the commitment of bilateral aid from the US to other countries is correlated with a foreign-policy preference convergence between the US and those countries. REWORD.
+
+My first and primary analysis is simply of the provision of any aid counting as treatment. For this analysis I get a total of 
 ```{r}
+
+##Simple Population Means
+ideal_treat|> group_by(treatment_any)|> 
+  summarize(total_change = mean(change_one_before, na.rm = TRUE))
+
+ideal_treat|> group_by(treat_sig)|> 
+  summarize(total_change = mean(change_one_before, na.rm = TRUE))
+
+## Getting just country data for one session 
 ideal_treat|> 
-  ggplot(mapping = aes(x = committed_millions,
-                       y = change_one_before))+
-  geom_point()
+  filter(session == 29)|>
+  select(session, Countryname, committed_millions, treatment_any, IdealPointAll, idealpoint_us, distance_abs, change_one_before)
 
-fit_usd_one <-  lm(change_one_before ~ committed_millions, data = ideal_treat)
-fit_usd_two <-  lm(change_two_before ~ committed_millions, data = ideal_treat)
+## Treatment Means and ATE per session, for any aid
+ideal_treat|> group_by(session, treatment_any)|>
+  summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
+  pivot_wider(names_from = treatment_any,
+              values_from = mean_change_one)|>
+  mutate(session_ate = `1` - `0`)|>
+  filter(!is.na(session_ate))
 
 
+## Treatment Means and ATE per session for significant aid
+ideal_treat|> group_by(session, treat_sig)|>
+  summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
+  pivot_wider(names_from = treat_sig,
+              values_from = mean_change_one)|>
+  mutate(session_ate = `1` - `0`)|>
+  filter(!is.na(session_ate))
 
 
 ```
@@ -103,31 +129,29 @@ Stastical Significance?
 
 
 
-```{r loadata, echo = FALSE}
-library(tidyverse)
-library(dplyr)
-install.packages("lubridate")
-install.packages("countrycode")
-library(lubridate)
-library(countrycode)
 
-load("~/Desktop/GOV 50/Projects/Final/final_project/data/un_votes.RData") ## 
 
-ideal <-  read.csv("data/IdealpointestimatesAll_Jul2023.csv")
-lead <- read_dta("data/WhyLeadersFightLEADDataset_updated.dta")
-presidents <- read.csv("data/presidents.csv")
 
-presidents <- presidents|>
-  select(Presidency, President, Took.office, Left.office, Party)
 
-View(ideal)
-View(completeVotes)
-View(presidents)
-## Create the presidents tibble for dates. 
 
-completeVotes|> summary()
 
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Ideal Points  
 ```{r}
@@ -698,5 +722,43 @@ summary(fit)
 View(fit)
 coef(fit)
 
+
+##Using USD
+ideal_treat|> 
+  ggplot(mapping = aes(x = committed_millions,
+                       y = change_one_before))+
+  geom_point()
+
+fit_usd_one <-  lm(change_one_before ~ committed_millions, data = ideal_treat)
+fit_usd_two <-  lm(change_two_before ~ committed_millions, data = ideal_treat)
+
 ```
 
+
+
+
+```{r loadata, echo = FALSE}
+library(tidyverse)
+library(dplyr)
+install.packages("lubridate")
+install.packages("countrycode")
+library(lubridate)
+library(countrycode)
+
+load("~/Desktop/GOV 50/Projects/Final/final_project/data/un_votes.RData") ## 
+
+ideal <-  read.csv("data/IdealpointestimatesAll_Jul2023.csv")
+lead <- read_dta("data/WhyLeadersFightLEADDataset_updated.dta")
+presidents <- read.csv("data/presidents.csv")
+
+presidents <- presidents|>
+  select(Presidency, President, Took.office, Left.office, Party)
+
+View(ideal)
+View(completeVotes)
+View(presidents)
+## Create the presidents tibble for dates. 
+
+completeVotes|> summary()
+
+```
