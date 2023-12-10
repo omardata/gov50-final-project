@@ -21,8 +21,6 @@ library(countrycode)
 
 ```
 
-
-
 ## Ideal Points Data Prep
 ```{r}
 ideal <-  read.csv("data/IdealpointestimatesAll_Jul2023.csv")
@@ -198,7 +196,7 @@ ideal_aid<- ideal_aid |>
 
 View(ideal_aid)
 
-## Adding groups for aid determination.. is there some way of showing this? 
+## Adding groups for aid determination
 ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
                                  treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
                                  treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
@@ -266,11 +264,10 @@ My first and primary analysis is simply taking any commitment of aid as treatmen
 However, for countries in the treatment group the model is rather clear of its prediction. The main  coeficient of interest is negative indicating that for a country that has received any amount of aid we should expect to see the distance between that country and the United States. More specifically we should expect to see a decrease in the distance of approximately ___. 
 
 
-PLOT of analysis. Which sort of plot.. Bar? 
-
+Plot of anlysis
 
 ```{r}
-
+## Creating table for ATE in a given session
 ate_table <-ideal_treat|> 
   group_by(session, treatment_any)|>
   summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
@@ -281,36 +278,11 @@ ate_table <-ideal_treat|>
 
 ate_table_names<- ate_table[, c(1, 3, 2, 4)]
 colnames(ate_table_names) <- c("Session", "Treatment", "Control", "Sesssion ATE")
-## All session ATES in table
+
+## Gives table for ATE in a given session 
 knitr::kable(ate_table_names)
 
-
-ate_averages_across <- c(mean(ate_table_names$Treatment), mean(ate_table_names$Control))
-as_tibble(ate_averages_across)|> 
-
-ate_averages_across<- data.frame(Treatment = mean(ate_table_names$Treatment),
-                                 Control = mean(ate_table_names$Control)
-                                 )
-  
-ate_average_across_table<- as_tibble(ate_averages_across)|> 
-  mutate(ate_across_sessions =  `Treatment` - `Control`)
-
-colnames(ate_average_across_table)<- c("Treatment Mean Sessions", "Control Mean Across Sessions", "ATE Across Sessions")
-
-
-
-## Making distribution of the differences for all sessions 
-
-ate_table|> ggplot( mapping = aes(x = `0`))+
-  geom_histogram()
-
-ate_table|> ggplot( mapping = aes(x = `1`))+
-  geom_histogram()
-
-## Making point chart 
-ate_table|> ggplot(mapping = aes( x = ))
-
-
+## Making ATE table longer, for visualization
 ate_table_longer<- ate_table|> 
   select(!session_ate)|>
   pivot_longer(
@@ -320,13 +292,58 @@ ate_table_longer<- ate_table|>
   )|>
   mutate(treatment = as.numeric(treatment))
 
+## This is a geom_point showing treatment and control means across all sessions that we can compare with this data
+ate_table_longer|> 
+  ggplot(mapping = aes(x = session,
+                       y = change_one_before))+
+  geom_point(mapping = aes(color = treatment))
+
+
+##Regression Plot for the Session ATEs.
+ate_table_longer_num <-ate_table_longer|> 
+  mutate(treatment = as.numeric(treatment))
+
+ate_table_longer_num|> 
+  ggplot(mapping = aes(x = treatment,
+                       y = change_one_before))+
+  geom_point()+
+  geom_smooth(method = "lm", 
+              formula = y ~ x,
+              se = FALSE
+              )
+
+## Density Chart
+ate_table_longer|> 
+  mutate(treatment = as.factor(treatment))|>
+  ggplot( mapping = aes(x = change_one_before,
+                        fill = treatment,
+                        color =  treatment))+
+  geom_density(alpha = 0.3)
+
+
+##Distribution Charts
+ate_table_longer|> 
+  mutate(treatment = as.factor(treatment))|>
+  ggplot( mapping = aes(x = change_one_before,
+                        fill = treatment,
+                        color =  treatment))+
+  geom_histogram()+
+
+##Whisker Charts
 
 
 
-ggplot(gapminder, aes(x = gdpPercap)) +
-  geom_histogram(binwidth = 5000) +
-  geom_vline(aes(xintercept = mean(gdpPercap)), color = "indianred") +
-  geom_vline(aes(xintercept = median(gdpPercap)), color = "dodgerblue")
+
+
+
+ggplot(data = midwest,
+       mapping = aes(x = percbelowpoverty,
+                     fill = state, color = state)) +
+  geom_density(alpha = 0.3)
+
+##Regression on data in ATE table 
+ate_fit <- lm(change_one_before ~ treatment, data = ate_table_longer)
+
 
 ```
 
@@ -429,142 +446,6 @@ Stastical Significance?
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r}
- 
-
-minus_one <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, distance_abs)|>
-  mutate(session = session - 1)
-
-minus_two <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, distance_abs)|>
-  mutate(session = session - 2)
- 
-plus_one <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, distance_abs)|>
-  mutate(session = session + 1 )
-
-plus_two <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, distance_abs)|>
-  mutate(session = session + 2)
-
-### Adding new colums for other years
-ideal_dis <- ideal_aid|> left_join(minus_one, 
-                      by = join_by(ccode, session),
-                      suffix =  c("", "_minus_one"))
-
-ideal_aid <- ideal_aid|> left_join(minus_two, 
-                      by = join_by(ccode, session),
-                      suffix =  c("", "_minus_two"))
-
-ideal_aid <- ideal_aid|> left_join(plus_one, 
-                      by = join_by(ccode, session),
-                      suffix =  c("", "_plus_one"))
-
-
-ideal_aid <- ideal_aid|> left_join(plus_two, 
-                      by = join_by(ccode, session),
-                      suffix =  c("", "_plus_two"))
-
-## Ordering and new titles for columns 
-ideal_aid<- ideal_aid|> 
-  mutate(distance_two_before = distance_abs_plus_two,
-         distance_one_before = distance_abs_plus_one,
-         distance_duplicate = distance_abs,
-         distance_one_after = distance_abs_minus_one,
-         distance_two_after = distance_abs_minus_two)
-
-## Mutating for difference 
-ideal_aid<- ideal_aid|> 
-  mutate(change_one_before = distance_one_before - distance_duplicate,
-         change_two_before = distance_two_before - distance_duplicate)
-
-
-```
-
-
-
-## Finding prev years into rows
-minus_one <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session = session - 1)
-
-minus_two <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session = session - 2)
- 
-plus_one <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session = session + 1 )
-
-plus_two <- ideal_aid|> 
-  group_by(ccode, session)|>
-  select(ccode, session, IdealPointAll)|>
-  mutate(session = session + 2)
-
-```{r}
-
-
-```
-
-## Results
-
-```{r}
-
-
-ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
-                                 treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
-                                 treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
-                                 treat_high = if_else(committed_millions >100, 1, 0),
-                                 treat_sig = if_else(committed_millions > 10, 1, 0)
-                                )
-
-## Histogram of Changes
- ideal_aid|> 
-  ggplot(mapping = aes(x = change_one_before))+
-  geom_histogram()
-
- ideal_aid|> 
-  ggplot(mapping = aes(x = change_two_before))+
-  geom_histogram()
- 
-
-
-
-
-
-
-```
-
-
-
-
-
-## Doing this for distances not just ideal points... changes in ditances 
 
 
 
@@ -928,4 +809,155 @@ ideal_aid<- ideal_aid|>
   mutate(change_one_before = distance_one_before - distance_duplicate,
          change_two_before = distance_two_before - distance_duplicate)
 ```
+
+
+```{r fromresults}
+fit_treat<- lm(change_one_before ~ treatment_any, data = ideal_treat)
+summary(fit_treat)
+
+## Making distribution of the differences for all sessions 
+ate_table|> ggplot( mapping = aes(x = `0`))+
+  geom_histogram()
+
+ate_table|> ggplot( mapping = aes(x = `1`))+
+  geom_histogram()
+
+## Making point chart for means of sessions
+ate_table|> ggplot(mapping = aes( x = ))
+
+
+
+##Calculating Means of all sessions 
+ate_averages_across <- c(mean(ate_table_names$Treatment), mean(ate_table_names$Control))
+as_tibble(ate_averages_across)|> 
+
+ate_averages_across<- data.frame(Treatment = mean(ate_table_names$Treatment),
+                                 Control = mean(ate_table_names$Control)
+                                 )
+  
+ate_average_across_table<- as_tibble(ate_averages_across)|> 
+  mutate(ate_across_sessions =  `Treatment` - `Control`)
+
+colnames(ate_average_across_table)<- c("Treatment Mean Sessions", "Control Mean Across Sessions", "ATE Across Sessions")
+
+```
+
+
+```{r}
+
+
+ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
+                                 treat_some = if_else( (committed_millions > 0) & (committed_millions <= 1), 1, 0),
+                                 treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
+                                 treat_high = if_else(committed_millions >100, 1, 0),
+                                 treat_sig = if_else(committed_millions > 10, 1, 0)
+                                )
+
+## Histogram of Changes
+ ideal_aid|> 
+  ggplot(mapping = aes(x = change_one_before))+
+  geom_histogram()
+
+ ideal_aid|> 
+  ggplot(mapping = aes(x = change_two_before))+
+  geom_histogram()
+ 
+
+
+
+
+
+
+```
+
+
+
+
+```{r}
+ 
+
+minus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session - 1)
+
+minus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session - 2)
+ 
+plus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session + 1 )
+
+plus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, distance_abs)|>
+  mutate(session = session + 2)
+
+### Adding new colums for other years
+ideal_dis <- ideal_aid|> left_join(minus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_minus_one"))
+
+ideal_aid <- ideal_aid|> left_join(minus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_minus_two"))
+
+ideal_aid <- ideal_aid|> left_join(plus_one, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_one"))
+
+
+ideal_aid <- ideal_aid|> left_join(plus_two, 
+                      by = join_by(ccode, session),
+                      suffix =  c("", "_plus_two"))
+
+## Ordering and new titles for columns 
+ideal_aid<- ideal_aid|> 
+  mutate(distance_two_before = distance_abs_plus_two,
+         distance_one_before = distance_abs_plus_one,
+         distance_duplicate = distance_abs,
+         distance_one_after = distance_abs_minus_one,
+         distance_two_after = distance_abs_minus_two)
+
+## Mutating for difference 
+ideal_aid<- ideal_aid|> 
+  mutate(change_one_before = distance_one_before - distance_duplicate,
+         change_two_before = distance_two_before - distance_duplicate)
+
+
+```
+
+
+
+## Finding prev years into rows
+minus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session - 1)
+
+minus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session - 2)
+ 
+plus_one <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session + 1 )
+
+plus_two <- ideal_aid|> 
+  group_by(ccode, session)|>
+  select(ccode, session, IdealPointAll)|>
+  mutate(session = session + 2)
+
+```{r}
+
+
+```
+
+
+
 
