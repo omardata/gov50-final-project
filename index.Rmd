@@ -301,10 +301,32 @@ colnames(ate_average_across_table)<- c("Treatment Mean Sessions", "Control Mean 
 
 ## Making distribution of the differences for all sessions 
 
+ate_table|> ggplot( mapping = aes(x = `0`))+
+  geom_histogram()
 
-ideal_treat|>
-  group
+ate_table|> ggplot( mapping = aes(x = `1`))+
+  geom_histogram()
 
+## Making point chart 
+ate_table|> ggplot(mapping = aes( x = ))
+
+
+ate_table_longer<- ate_table|> 
+  select(!session_ate)|>
+  pivot_longer(
+    cols = `0`:`1`,
+    names_to = "treatment",
+    values_to = "change_one_before"
+  )|>
+  mutate(treatment = as.numeric(treatment))
+
+
+
+
+ggplot(gapminder, aes(x = gdpPercap)) +
+  geom_histogram(binwidth = 5000) +
+  geom_vline(aes(xintercept = mean(gdpPercap)), color = "indianred") +
+  geom_vline(aes(xintercept = median(gdpPercap)), color = "dodgerblue")
 
 ```
 
@@ -350,7 +372,6 @@ fit_treat_all <- lm (change_two_before ~ treatment_any + treat_some + treat_midd
 
 summary(fit_treat)
 summary(fit_treat_all)
-
 
 
 ## Simple means for sig aid
