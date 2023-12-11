@@ -203,14 +203,15 @@ There are a two steps to calculating my dependent variable `change_one_before`. 
 Data for my independent variable, `treatment_any` comes from  AidData’s Core Research Release Version 3.0 (AidData. 2016.) This variable is a binary variable that is calculated from AidCores' aggregated data (but this source also provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported from various sources and is given in constant ($USD for 2011) dollars, and in million to allow for time-series analysis. This raw data is reported under the variable `commitment_millions`. This data is also reported at a recipient-year level, meaning that it provides the amount that the United State's committed to a given state in a given year. I follow the practice of assuming that if a country didn't report aid to  a country in a given year then the commitment of aid for that year was in fact zero. I also take a commitment to providing aid as a sufficient variable for analysis though there might be some discrepancy for aid that actually is paid out and aid that is committed, and thus some room for further analysis of aid actually delivered as the treatment condition.
 
 
-```{r dep_plot, include = FALSE}
+```{r dep_plot_setup, include = FALSE}
 change_one_sd <- sd(ideal_treat_fil$change_one_before, na.rm = TRUE)
 mean_dep<- mean(ideal_treat_fil$change_one_before, na.rm = TRUE)
 
-
 dep_plot<- ideal_treat_fil|>
   ggplot(mapping = aes(x = change_one_before))+
-  geom_histogram(binwidth = .07)+
+  geom_histogram(fill = "orange",
+                 color = "orange",
+                 binwidth = .07)+
   labs(title = "Figure One: Distribution of Dependent Variable",
        subtitle = "All included",
        x = "Change in alignment with USA from Previous Year, change_one_before",
@@ -220,11 +221,13 @@ dep_plot<- ideal_treat_fil|>
   geom_vline( xintercept = change_one_sd*(-2) )
 ```
   
-
-
- display dep_plot eventually
  
-If we look at all the distribution of all `change_one_before` for all session, it appears that the variable follows a normally distribution, centered at about `mean_dep`, with a standard deviation of `change_one_sd` . 
+If we look figure one below, we see a plot of the distribution of my dependent variable `change_one_before` for all sessions. It appears that the variable follows a normal distribution, centered at about `-0.01858213`, indicated by the center line. This distribution has a standard deviation of about `0.254315`, and the black lines at the two extreme indicate the range of two standard deviations.
+
+
+```{r dep_plot, layout="l-body-outset", echo = FALSE}
+dep_plot
+```
 
 My research design employs a differences-in-differences approach. I treat the the commitment of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. My independent variable is `treatment_any` and my depended variable is `change_one_before`. Both of my variables are determined for country-session pairs.
 
@@ -235,25 +238,6 @@ My dependent variable is`change_one_before` is a numeric variable describing the
 To calculate the difference in differences we can then first take the average change among all countries in the control group and subtract it from the average change of all countries in the treatment group. This gives us an estimated average treatment effect. We can also run a regression of the values 
 
 I work under the assumption that in a given session all countries will experience, on average parallel trends through time. Thus, if we observe a decrease in the distance from the USA for countries that are in the treatment group that is relatively higher than the decrease that we observe for those in the treatment, this would be evidence for my hypothesis. That is a statistically significant negative ATE would be evidence for my hypothesis. 
-
-## 3 Results
-
-In summary my findings through the proposed difference in difference approach are rather mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe any of my suggestions as casual inferences. 
-
-My first and primary analysis used a difference in differences approach in order to calculate the average treatment effect. In order to perform this anlysis I run a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yields two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is `intercept` indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
-
-For for countries in the treatment group the model provides a more clear prediction. The main coefficient of interest is equivalent to the average treatment effect that is reported in table __.  This coefficient is `main_coef`. It is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `-1*main_coef`. Recall, this decrease is an indication of increaed alignment. However, with a p-value of `main_coef_p`, this coeficient is also not statistically significant. Thus, with this approach I cannot reject the null hypothesis of any observed difference being due to pure chance. However, in the following section I perform another test, but it too is not statistically significant and cannot be used to derive any causal inferences. 
-
-Need to make each of the following
-table_formatted 
-table_sum_ate
-fit_ate_formated
-avg_ate
-
-This regression analysis reflects the same underlying approach as the difference in differences that can be calculated as in the table below. In this chart, I display the change in the distance between the US and other countries from the previous session to the current session. This table lists the data on which I ran the above  regression. Table __ summarizes the insights from this table by taking the averages across the groups, across sessions and fining the difference to estimate the average treatment effect. 
-
-Whatever the results of my anlysis could have been, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship btween countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy preference to the countries to which it provides aid.
-
 
 
 ```{r reg_main, include = FALSE}
@@ -290,22 +274,31 @@ ate_table_longer<- ate_table|>
 ## This is a geom_point showing treatment and control means across all sessions that we can compare with this data
 ate_table_longer_point<- 
   ate_table_longer|> 
+  mutate(treatment = as.factor(treatment))|>
   ggplot(mapping = aes(x = session,
                        y = change_one_before))+
-  geom_point(mapping = aes(color = treatment))
+  geom_point(mapping = aes(color = treatment))+
+  labs(title = "Figure Two: Point Plot of Control and Treatment Effects Across Sessions",
+       subtitle = "Visualizing ATE per session as the distance between treatment and control",
+       x = "Session Number",
+       y = "Change in Foreign Policy alignment from previoius year")
 
 ##Regression Plot for the Session ATEs.
 ate_table_longer_num <-ate_table_longer|> 
   mutate(treatment = as.numeric(treatment))
 
-ate_table_longer_num|> 
+ate_table_longer_num_plot<- ate_table_longer_num|> 
   ggplot(mapping = aes(x = treatment,
                        y = change_one_before))+
   geom_point()+
   geom_smooth(method = "lm", 
               formula = y ~ x,
               se = FALSE
-              )
+              )+
+  labs(title = "Figure Three: Visualizing ATE and Line of Best Fit",
+       subtitle = "Effect of Treatment Group vs Control Group",
+       x = "Treatment Variable",
+       y = "Change in Foreign Policy alignment from previous year")
 
 ## Regression 
 fit_ate_table_any<- lm(change_one_before ~ treatment, data = ate_table_longer)
@@ -324,6 +317,40 @@ gof_map = c("nobs", "r.squared", "adj.r.squared"))
 
 
 ```
+
+## 3 Results
+In summary my findings through the proposed difference in difference approach are rather mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe any of my suggestions as casual inferences. 
+
+Table one below displays the data that I use in my main analysis, data that I calculated from the two data sets mentioned in section two. 
+
+```{r table_formatted, layout="l-body-outset", echo = FALSE}
+table_formatted
+```
+
+Figure two below displays a plotted visual representation of data from the above table. We can visualize the average ATE for any given session as the y-value of the treatement point minus the y-value of the control point. 
+
+
+```{r , layout="l-body-outset", echo = FALSE}
+ate_table_longer_point
+```
+
+My primary analysis, that is displayed in the figure above, used a difference in differences approach in order to calculate the average treatment effect. In order to perform this analysis I ran a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yielded two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is  indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
+
+For for countries in the treatment group the model provides a more clear prediction. The main coefficient of interest is equivalent to the average treatment effect that is reported in table __.  This coefficient is `main_coef`. It is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `-1*main_coef`. Recall, this decrease is an indication of increaed alignment. However, with a p-value of `main_coef_p`, this coeficient is also not statistically significant. Thus, with this approach I cannot reject the null hypothesis of any observed difference being due to pure chance. However, in the following section I perform another test, but it too is not statistically significant and cannot be used to derive any causal inferences. 
+
+Below is a table summarizing these coeficients and statistical significance of these coeficients.
+```{r , layout="l-body-outset", echo = FALSE}
+fit_ate_formated
+```
+
+
+This regression analysis reflects the same underlying approach as the difference in differences that can be calculated as in the table below. In this chart, I display the change in the distance between the US and other countries from the previous session to the current session. This table lists the data on which I ran the above  regression. Table __ summarizes the insights from this table by taking the averages across the groups, across sessions and fining the difference to estimate the average treatment effect. 
+
+Whatever the results of my anlysis could have been, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship btween countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy preference to the countries to which it provides aid.
+
+
+
+
 
 
 
