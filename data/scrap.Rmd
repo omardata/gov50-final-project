@@ -1,5 +1,173 @@
 
 
+
+
+
+
+
+ From data section 
+
+```{r values, include = FALSE}
+change_one_sd <- sd(ideal_treat_fil$change_one_before, na.rm = TRUE)
+mean_dep<- mean(ideal_treat_fil$change_one_before, na.rm = TRUE)
+```
+
+
+```{r dep_plot, include = FALSE}
+
+dep_plot<- ideal_treat_fil|>
+  ggplot(mapping = aes(x = change_one_before))+
+  geom_histogram(binwidth = .07)+
+  labs(title = "Figure One: Distribution of Dependent Variable",
+       subtitle = "All included",
+       x = "Change in alignment with USA from Previous Year, change_one_before",
+       y = "Count")+
+  geom_vline( xintercept = mean_dep)+
+  geom_vline( xintercept = change_one_sd*2)+
+  geom_vline( xintercept = change_one_sd*(-2) )
+  
+```
+
+
+
+
+
+
+
+
+
+
+
+dep_plot<- ideal_treat_fil|>
+  ggplot(mapping = aes(x = change_one_before))+
+  geom_histogram(color = "orange", 
+                 fill = "orange",
+                 binwidth = .07)+
+  labs(title = "Figure One: Distribution of Dependent Variable",
+       subtitle = "All included",
+       x = "Change in alignment with USA from Previous Year, `change_one_before`",
+       y = "Count")+
+  geom_vline( xintercept = mean_dep)+
+  geom_vline( xintercept = change_one_sd*2)+
+  geom_vline( xintercept = change_one_sd*(-2) )
+
+
+
+`r table_formatted`
+`r table_sum_ate`
+`r fit_ate_formated`
+`r avg_ate`
+
+
+
+
+
+
+## Second Reg
+```{r second_reg, include = FALSE}
+
+## Creating table for ATE in a given session
+ate_table_two <-ideal_treat|> 
+  group_by(session, treatment_middle_up)|>
+  summarize(mean_change_one = mean(change_one_before, na.rm = TRUE))|>
+  pivot_wider(names_from = treatment_middle_up,
+              values_from = mean_change_one)|>
+  mutate(session_ate = `1` - `0`)|>
+  filter(!is.na(session_ate))
+
+ate_table_names_two<- ate_table[, c(1, 3, 2, 4)]
+colnames(ate_table_names) <- c("Session", "Treatment", "Control", "Session ATE")
+
+## Gives table for ATE in a given session 
+table_formatted_two<- knitr::kable(ate_table_names)
+
+
+avg_ate_two <- mean(ate_table_names_two$`Session ATE`)
+
+
+## Making ATE table longer, for visualization
+ate_table_longer_two<- ate_table_two|> 
+  select(!session_ate)|>
+  pivot_longer(
+    cols = `0`:`1`,
+    names_to = "treatment_middle_up",
+    values_to = "change_one_before"
+  )|>
+  mutate(treatment = as.numeric(treatment_middle_up))
+
+## This is a geom_point showing treatment and control means across all sessions that we can compare with this data
+ate_table_longer_point_two<- 
+  ate_table_longer_two|> 
+  ggplot(mapping = aes(x = session,
+                       y = change_one_before))+
+  geom_point(mapping = aes(color = treatment_middle_up))
+
+##Regression Plot for the Session ATEs.
+ate_table_longer_num_two<-ate_table_longer_two|> 
+  mutate(treatment = as.numeric(treatment_middle_up))
+
+ate_table_longer_num_two|> 
+  ggplot(mapping = aes(x = treatment_middle_up,
+                       y = change_one_before))+
+  geom_point()+
+  geom_smooth(method = "lm", 
+              formula = y ~ x,
+              se = FALSE
+              )
+
+## Regression 
+fit_ate_table_any_two<- lm(change_one_before ~ treatment_middle_up, data = ate_table_longer_two)
+sum_fit_ate <- summary(fit_ate_table_any_two)$coefficients
+
+intercept<- sum_fit_ate[1,1]
+int_p<- sum_fit_ate[1,4]
+
+main_coef<- sum_fit_ate[2,1]
+main_ceof_p<- sum_fit_ate[2,4]
+
+fit_ate_formated_two<- modelsummary::modelsummary(fit_ate_table_any_two,
+statistic = c("s.e. = {std.error}",
+"p = {p.value}"),
+gof_map = c("nobs", "r.squared", "adj.r.squared"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Scrap Writing
 I want to explore the extent to which there is state agreement on certain votes? 
 The effect of something on voting coincidence in a particular time period and in a particular topic? 
@@ -8,7 +176,7 @@ The effect of political turn-over in the UNGA voting coincidence?
 The role of leaders?
 The role of some country-level feature?
  
- 
+
 Do small states agree more, do large states disagree more?
 Democratic or Republican presidents at the UN?
 Are there any statistical differences?
