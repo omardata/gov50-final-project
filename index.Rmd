@@ -138,7 +138,7 @@ cart|> filter(Countryname == "Serbia")
 ```
 
 
-```{r joining_aid_ideal}
+```{r joining_aid_ideal, include = FALSE}
 ##Checking that UN is unique? Good. 
 ##aid_us|>count(country_cown, year_match) |> filter(n > 1)
 
@@ -180,7 +180,7 @@ ideal_treat_fil<- ideal_treat |>filter(session == 29:69)
 
 
 
-## 1 Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs)
+# Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs)
 This paper will explore the relationship between a country's foreign-policy preferences and the amount of aid that country receives from the United States by looking at data that is derived from session 29-69 of the United Nations General Assembly. Ultimately the question that interests me is does US provision of aid make the recipients of aid more inclined to the support of the US-led liberal world order? 
 
 The underlying foreign policy preferences of a state are a central concern in international relations literature-  “perhaps the most fundamental issue” in the discipline (Johnston 2005, 1040). It is of great interest to be able to predict which factors affect whether a state is likely to support one foreign policy over another. A state's preferences play a part in guiding how a state acts, but these preferences are not a "not directly observed and thus need to be inferred from observable behavior"(Dreher et al). Thus many turn to votes in the United Nations General Assembly as a place to observe state behavior and attempt to operationalize and quantify state preferences. UNGA votes are an attractive option primarily because "they are comparable and observable actions taken by many countries at set points in time"(Dreher et al). 
@@ -195,7 +195,7 @@ you need to present a plausible story why the hypothesis might be true. Often, t
 Evidence for an increase in alignment between the US and another country would be to see a decrease in the distance between the foreign policy preference of these two countries. Thus evidence for my hypothesis would be to see that following the commitment of aid this distance would decrease, that is we would see a negative change after thes commitment of aid.  
 
 
-## 2 Data Section ---------- Briefly describes the data source, describes how the key dependent and independent variables are measured (e.g., a survey, statistical model, or expert coding), and also produces a plot that summarizes the dependent variable) (2-3 paragraphs)
+##  Data Section ---------- Briefly describes the data source, describes how the key dependent and independent variables are measured (e.g., a survey, statistical model, or expert coding), and also produces a plot that summarizes the dependent variable) (2-3 paragraphs)
 
 In order to analyze this effect I use two pretty cool data sets, one for the dependent variable and one for the independent variable.
 
@@ -213,7 +213,7 @@ Data for my independent variable, `treatment_any` comes from  AidData’s Core R
 
 
 
-If we look at all the distribution of all `change_one_before` for all session, it appears that the variable follows a normally distribution, centered at about `r mean_dep`, with a standard deviation of `r change_one_sd` . 
+If we look at all the distribution of all `change_one_before` for all session, it appears that the variable follows a normally distribution, centered at about `mean_dep`, with a standard deviation of `change_one_sd` . 
 
  display dep_plot eventually
 
@@ -227,15 +227,15 @@ To calculate the difference in differences we can then first take the average ch
 
 I work under the assumption that in a given session all countries will experience, on average parallel trends through time. Thus, if we observe a decrease in the distance from the USA for countries that are in the treatment group that is relatively higher than the decrease that we observe for those in the treatment, this would be evidence for my hypothesis. That is a statistically significant negative ATE would be evidence for my hypothesis. 
 
-## Results
+## 3 Results
 plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
 
 
 In summary my findings through the proposed difference in difference approach are rather mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe any of my suggestions as casual inferences. 
 
-My first and primary analysis used a difference in differences approach in order to calculate the average treatment effect. In order to perform this anlysis I run a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yields two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is `r intercept` indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
+My first and primary analysis used a difference in differences approach in order to calculate the average treatment effect. In order to perform this anlysis I run a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yields two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is `intercept` indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
 
-For for countries in the treatment group the model provides a more clear prediction. The main coefficient of interest is equivalent to the average treatment effect that is reported in table __.  This coefficient is `r main_coef`. It is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `r -1*main_coef`. Recall, this decrease is an indication of increaed alignment. However, with a p-value of `r main_coef_p`, this coeficient is also not statistically significant. Thus, with this approach I cannot reject the null hypothesis of any observed difference being due to pure chance. However, in the following section I perform another test, but it too is not statistically significant and cannot be used to derive any causal inferences. 
+For for countries in the treatment group the model provides a more clear prediction. The main coefficient of interest is equivalent to the average treatment effect that is reported in table __.  This coefficient is `main_coef`. It is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `-1*main_coef`. Recall, this decrease is an indication of increaed alignment. However, with a p-value of `main_coef_p`, this coeficient is also not statistically significant. Thus, with this approach I cannot reject the null hypothesis of any observed difference being due to pure chance. However, in the following section I perform another test, but it too is not statistically significant and cannot be used to derive any causal inferences. 
 
  Need to make each of the following
 table_formatted 
@@ -247,7 +247,7 @@ This regression analysis reflects the same underlying approach as the difference
 
 Whatever the results of my anlysis could have been, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship btween countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy preference to the countries to which it provides aid.
 
-## Main Analysis
+## 4 Main Analysis
 
 
 ```{r reg_main, include = FALSE}
@@ -327,14 +327,14 @@ gof_map = c("nobs", "r.squared", "adj.r.squared"))
 
 
 
-##Secondary Analysis
+## 5 Secondary Analysis
 Because of the failure of my primary analysis to produce a statistically significant result, I performed this second analysis, in part to speak to the second hypothesis that I posed. I hypothesizes that higher amounts of aid could be correlated with an increased probablity of alignment with the US. Should we focus on analyzing the relationships between state preference and aid commitments, does a clear statistically significant pattern emerge for countries that are committed higher amounts of aid.
 
-To test for this hypothesis I used I simply too pooled all observation of changes in the alignment with USA. Whereas before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US with no respect to session. Thus I get a distribution for all observed changes that looks like this `r second_dist`.
+To test for this hypothesis I used I simply too pooled all observation of changes in the alignment with USA. Whereas before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US with no respect to session. Thus I get a distribution for all observed changes that looks like this `second_dist`.
 
-I ran two regression models on this data. In the first `r fit_treat_all_formated` I use the same treatment variable from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in__  Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coefficient is the coefficient of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `r -1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `r main_coef_p`, this coefficient is also not statistically significant.
+I ran two regression models on this data. In the first `fit_treat_all_formated` I use the same treatment variable from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in__  Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coefficient is the coefficient of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `-1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `main_coef_p`, this coefficient is also not statistically significant.
 
-The second regression `r fit_treat_all_multi_formated` I run includes a two categorical variables as predictors, this time in attempt to see if there is any difference between the amount of aid that is provided. In this regression I now include two different categorical predictors. The first being `treatment_middle` for when a country receives a commitment between 1 and 100 million, and `treatment_high` for when a country receives a commitment greater than 100 million dollars. This regression yields a couple things of note, first that each of the coefficients of interest are negative, in line with my expectations about the decrease in distance, or said differently the increase in foreign-policy alignment. This might be construed of evidence for my first hypothesis-- that there is some decrease in distance when the US commit aid. The coeficinets for both of these predictors are bigger in magnitude than that in my firt regresssion analysis. It might also be construed as support for my second hypothesis, as it was seen that perhaps we just needed to label as treatment only higher amount of committed aid in order to see a more pronounced correlation with a foreign policy preference alignment. The coefficient on the `treatement_middle` predictor is particularly of note. For a country that receives between  1 and 100 million dollars this model predicts an average deacrease in distance of 0.09632 points, and this prediction is the closest my analysis has come to statistical significance, with a p-value of 0.190. 
+The second regression `fit_treat_all_multi_formated` I run includes a two categorical variables as predictors, this time in attempt to see if there is any difference between the amount of aid that is provided. In this regression I now include two different categorical predictors. The first being `treatment_middle` for when a country receives a commitment between 1 and 100 million, and `treatment_high` for when a country receives a commitment greater than 100 million dollars. This regression yields a couple things of note, first that each of the coefficients of interest are negative, in line with my expectations about the decrease in distance, or said differently the increase in foreign-policy alignment. This might be construed of evidence for my first hypothesis-- that there is some decrease in distance when the US commit aid. The coefficients for both of these predictors are bigger in magnitude than that in my firt regresssion analysis. It might also be construed as support for my second hypothesis, as it was seen that perhaps we just needed to label as treatment only higher amount of committed aid in order to see a more pronounced correlation with a foreign policy preference alignment. The coefficient on the `treatement_middle` predictor is particularly of note. For a country that receives between  1 and 100 million dollars this model predicts an average decrease in distance of 0.09632 points, and this prediction is the closest my analysis has come to statistical significance, with a p-value of 0.190. 
 
 
 
@@ -366,7 +366,7 @@ gof_map = c("nobs", "r.squared", "adj.r.squared"))
 
 
 
-## Conclusion a brief (one paragraph) concluding section that summarizes your results, assesses the extent to which you find support for your hypothesis, describes limitations of your analysis and threats to inference, and states how your analysis could be improved (e.g., improved data that would be useful to collect).1 paragraph (i) summarizing results and assessing the extent to which you find support for your hypothesis; (ii) describing limitations of the analysis and threats to inference (missing data, confounding, etc), and stating how you could improve your analysis if you had more time/money. (2pts)
+## 6 Conclusion a brief (one paragraph) concluding section that summarizes your results, assesses the extent to which you find support for your hypothesis, describes limitations of your analysis and threats to inference, and states how your analysis could be improved (e.g., improved data that would be useful to collect).1 paragraph (i) summarizing results and assessing the extent to which you find support for your hypothesis; (ii) describing limitations of the analysis and threats to inference (missing data, confounding, etc), and stating how you could improve your analysis if you had more time/money. (2pts)
 
 In conclusion, this paper was an exploration of the data that hoped to illuminate the relationship between foreign-policy preferences and US provision of foreign aid. A difference in differences appproach treated the the commitment to providing any amount of aid as a treatment condition and analyzed the effect of this condition on the foreign policy alignment of a coutry with the US. My finding were ultimately mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe even a statistically significant result as casual.A second analysis that pooled all avaible data and treated it as a cross-section analysis of the effect of aid, provided simiarly suggestive but inconclusive results that were no statistically significant. Thus, evidence for my hypothesis is weak, and I can not rule with any interesting level of probability that the result I observed are due to random chance. 
 
