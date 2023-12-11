@@ -140,17 +140,13 @@ cart|> filter(Countryname == "Serbia")
 
 ```{r joining_aid_ideal}
 ##Checking that UN is unique? Good. 
-aid_us|>
-  count(country_cown, year_match) |>
-  filter(n > 1)
+##aid_us|>count(country_cown, year_match) |> filter(n > 1)
 
 ## Remove data for country_cown is N/A
 aid_us <-  aid_us|>filter(!is.na(country_cown))
 
 ## Check that ideal point is unique? Good.
-ideal|>
-  count(country_cown, year_match) |>
-  filter(n > 1)
+## ideal|>count(country_cown, year_match) |> filter(n > 1)
 
 ##Joined Aid and Ideal
 ideal_aid <- ideal|> 
@@ -210,47 +206,16 @@ There are a two steps to calculating my dependent variable `change_one_before`. 
 Data for my independent variable, `treatment_any` comes from  AidData’s Core Research Release Version 3.0. This variable is a binary variable that is calculated from AidCores aggregated data (but also, they provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported from various sources and is given in constant ($USD for 2011) dollars, and in million to allow for time-series analysis. This raw data is reported under the variable `commitment_millions`. This data is also reported at a recipient-year level, meaning that it provides the amount that the United State's committed to a given state in a given year. I follow the practice of assuming that if a country didn't report aid to  a country in a given year then the commitment of aid for that year was in fact zero. I also take a commitment to providing aid as a sufficient variable for analysis though there might be some discrepancy for aid that actually is paid out and aid that is committed, and thus some room for further analysis of aid actually delivered as the treatment condition.
 
 
-```{r plot_dependent}
-
-
-change_one_sd <- sd(ideal_treat_fil$change_one_before, na.rm = TRUE)
-mean_dep<- mean(ideal_treat_fil$change_one_before, na.rm = TRUE)
-
-
-dep_plot<- ideal_treat_fil|>
-  ggplot(mapping = aes(x = change_one_before))+
-  geom_histogram(binwidth = .07)+
-  labs(title = "Figure One: Distribution of Dependent Variable",
-       subtitle = "All included",
-       x = "Change in alignment with USA from Previous Year, `change_one_before`",
-       y = "Count")+
-  geom_vline( xintercept = mean_dep)+
-  geom_vline( xintercept = change_one_sd*2)+
-  geom_vline( xintercept = change_one_sd*(-2) )
-  
-```
 
 
 
 
-dep_plot<- ideal_treat_fil|>
-  ggplot(mapping = aes(x = change_one_before))+
-  geom_histogram(color = "orange", 
-                 fill = "orange",
-                 binwidth = .07)+
-  labs(title = "Figure One: Distribution of Dependent Variable",
-       subtitle = "All included",
-       x = "Change in alignment with USA from Previous Year, `change_one_before`",
-       y = "Count")+
-  geom_vline( xintercept = mean_dep)+
-  geom_vline( xintercept = change_one_sd*2)+
-  geom_vline( xintercept = change_one_sd*(-2) )
 
 
 
 If we look at all the distribution of all `change_one_before` for all session, it appears that the variable follows a normally distribution, centered at about `r mean_dep`, with a standard deviation of `r change_one_sd` . 
 
-`r dep_plot`
+ display dep_plot eventually
 
 My research design employs a differences-in-differences approach. I treat the the commitment of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. My independent variable is `treatment_any` and my depended variable is `change_one_before`. Both of my variables are determined for country-session pairs.
 
@@ -264,16 +229,19 @@ I work under the assumption that in a given session all countries will experienc
 
 ## Results
 plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
+
+
 In summary my findings through the proposed difference in difference approach are rather mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe any of my suggestions as casual inferences. 
 
 My first and primary analysis used a difference in differences approach in order to calculate the average treatment effect. In order to perform this anlysis I run a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yields two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is `r intercept` indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
 
 For for countries in the treatment group the model provides a more clear prediction. The main coefficient of interest is equivalent to the average treatment effect that is reported in table __.  This coefficient is `r main_coef`. It is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `r -1*main_coef`. Recall, this decrease is an indication of increaed alignment. However, with a p-value of `r main_coef_p`, this coeficient is also not statistically significant. Thus, with this approach I cannot reject the null hypothesis of any observed difference being due to pure chance. However, in the following section I perform another test, but it too is not statistically significant and cannot be used to derive any causal inferences. 
 
-`r table_formatted`
-`r table_sum_ate`
-`r fit_ate_formated`
-`r avg_ate`
+ Need to make each of the following
+table_formatted 
+table_sum_ate
+fit_ate_formated
+avg_ate
 
 This regression analysis reflects the same underlying approach as the difference in differences that can be calculated as in the table below. In this chart, I display the change in the distance between the US and other countries from the previous session to the current session. This table lists the data on which I ran the above  regression. Table __ summarizes the insights from this table by taking the averages across the groups, across sessions and fining the difference to estimate the average treatment effect. 
 
