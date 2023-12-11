@@ -1,7 +1,7 @@
 ---
-title: "Gov 50 Final Project"
+title: "US Foreign Aid and Foreign Policy Preferences"
 author: "Omar Cano"
-description: "My final project"
+description: "A GOV 50 Final Project on the impact on US  aid on  US and aid-receipient foriegn policy alignment"
 output:
   distill::distill_article:
     self_contained: false
@@ -125,14 +125,14 @@ aid_us <- aid_us |> mutate(year_match = year + 1)
 
 ```
 
-```{r testing_name_conversion, eval = FALSE}
+```{r testing_name_conversion, include = FALSE}
 ## Testing Names, there are no names that are ambiguously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
-unique(aid_us_test$recipient)
-unique_names <- unique(ideal$Countryname) ## Possible problem  using ideal
-unique_names <- enframe(unique_names)
+##unique(aid_us_test$recipient)
+##unique_names <- unique(ideal$Countryname) ## Possible problem  using ideal
+##unique_names <- enframe(unique_names)
 
 
-cart|> filter(Countryname == "Serbia")
+##cart|> filter(Countryname == "Serbia")
 
 
 ```
@@ -180,7 +180,7 @@ ideal_treat_fil<- ideal_treat |>filter(session == 29:69)
 
 
 
-# Introduction: introduce the research question and hypothesis and briefly describe why it is interesting (1-2 paragraphs)
+# 1 Introduction
 This paper will explore the relationship between a country's foreign-policy preferences and the amount of aid that country receives from the United States by looking at data that is derived from session 29-69 of the United Nations General Assembly. Ultimately the question that interests me is does US provision of aid make the recipients of aid more inclined to the support of the US-led liberal world order? 
 
 The underlying foreign policy preferences of a state are a central concern in international relations literature-  “perhaps the most fundamental issue” in the discipline (Johnston 2005, 1040). It is of great interest to be able to predict which factors affect whether a state is likely to support one foreign policy over another. A state's preferences play a part in guiding how a state acts, but these preferences are not a "not directly observed and thus need to be inferred from observable behavior"(Dreher et al). Thus many turn to votes in the United Nations General Assembly as a place to observe state behavior and attempt to operationalize and quantify state preferences. UNGA votes are an attractive option primarily because "they are comparable and observable actions taken by many countries at set points in time"(Dreher et al). 
@@ -195,7 +195,7 @@ you need to present a plausible story why the hypothesis might be true. Often, t
 Evidence for an increase in alignment between the US and another country would be to see a decrease in the distance between the foreign policy preference of these two countries. Thus evidence for my hypothesis would be to see that following the commitment of aid this distance would decrease, that is we would see a negative change after thes commitment of aid.  
 
 
-##  Data Section ---------- Briefly describes the data source, describes how the key dependent and independent variables are measured (e.g., a survey, statistical model, or expert coding), and also produces a plot that summarizes the dependent variable) (2-3 paragraphs)
+##  2 Data and Methods 
 
 In order to analyze this effect I use two pretty cool data sets, one for the dependent variable and one for the independent variable.
 
@@ -206,12 +206,23 @@ There are a two steps to calculating my dependent variable `change_one_before`. 
 Data for my independent variable, `treatment_any` comes from  AidData’s Core Research Release Version 3.0. This variable is a binary variable that is calculated from AidCores aggregated data (but also, they provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported from various sources and is given in constant ($USD for 2011) dollars, and in million to allow for time-series analysis. This raw data is reported under the variable `commitment_millions`. This data is also reported at a recipient-year level, meaning that it provides the amount that the United State's committed to a given state in a given year. I follow the practice of assuming that if a country didn't report aid to  a country in a given year then the commitment of aid for that year was in fact zero. I also take a commitment to providing aid as a sufficient variable for analysis though there might be some discrepancy for aid that actually is paid out and aid that is committed, and thus some room for further analysis of aid actually delivered as the treatment condition.
 
 
+```{r dep_plot, include = FALSE}
+change_one_sd <- sd(ideal_treat_fil$change_one_before, na.rm = TRUE)
+mean_dep<- mean(ideal_treat_fil$change_one_before, na.rm = TRUE)
 
 
-
-
-
-
+dep_plot<- ideal_treat_fil|>
+  ggplot(mapping = aes(x = change_one_before))+
+  geom_histogram(binwidth = .07)+
+  labs(title = "Figure One: Distribution of Dependent Variable",
+       subtitle = "All included",
+       x = "Change in alignment with USA from Previous Year, change_one_before",
+       y = "Count")+
+  geom_vline( xintercept = mean_dep)+
+  geom_vline( xintercept = change_one_sd*2)+
+  geom_vline( xintercept = change_one_sd*(-2) )
+```
+  
 
 If we look at all the distribution of all `change_one_before` for all session, it appears that the variable follows a normally distribution, centered at about `mean_dep`, with a standard deviation of `change_one_sd` . 
 
@@ -230,14 +241,13 @@ I work under the assumption that in a given session all countries will experienc
 ## 3 Results
 plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
 
-
 In summary my findings through the proposed difference in difference approach are rather mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe any of my suggestions as casual inferences. 
 
 My first and primary analysis used a difference in differences approach in order to calculate the average treatment effect. In order to perform this anlysis I run a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yields two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is `intercept` indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
 
 For for countries in the treatment group the model provides a more clear prediction. The main coefficient of interest is equivalent to the average treatment effect that is reported in table __.  This coefficient is `main_coef`. It is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `-1*main_coef`. Recall, this decrease is an indication of increaed alignment. However, with a p-value of `main_coef_p`, this coeficient is also not statistically significant. Thus, with this approach I cannot reject the null hypothesis of any observed difference being due to pure chance. However, in the following section I perform another test, but it too is not statistically significant and cannot be used to derive any causal inferences. 
 
- Need to make each of the following
+Need to make each of the following
 table_formatted 
 table_sum_ate
 fit_ate_formated
@@ -247,7 +257,6 @@ This regression analysis reflects the same underlying approach as the difference
 
 Whatever the results of my anlysis could have been, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship btween countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy preference to the countries to which it provides aid.
 
-## 4 Main Analysis
 
 
 ```{r reg_main, include = FALSE}
@@ -338,7 +347,7 @@ The second regression `fit_treat_all_multi_formated` I run includes a two catego
 
 
 
-```{r}
+```{r dis_chart_second, include = FALSE}
 ##Distribution Chart for all observed country changes in the period of interest
 second_dist<- ideal_treat_fil|> 
   mutate(treatment_any = as.factor(treatment_any))|>
@@ -366,10 +375,14 @@ gof_map = c("nobs", "r.squared", "adj.r.squared"))
 
 
 
-## 6 Conclusion a brief (one paragraph) concluding section that summarizes your results, assesses the extent to which you find support for your hypothesis, describes limitations of your analysis and threats to inference, and states how your analysis could be improved (e.g., improved data that would be useful to collect).1 paragraph (i) summarizing results and assessing the extent to which you find support for your hypothesis; (ii) describing limitations of the analysis and threats to inference (missing data, confounding, etc), and stating how you could improve your analysis if you had more time/money. (2pts)
+## 6 Conclusion 
+a brief (one paragraph) concluding section that summarizes your results, assesses the extent to which you find support for your hypothesis, describes limitations of your analysis and threats to inference, and states how your analysis could be improved (e.g., improved data that would be useful to collect).1 paragraph (i) summarizing results and assessing the extent to which you find support for your hypothesis; (ii) describing limitations of the analysis and threats to inference (missing data, confounding, etc), and stating how you could improve your analysis if you had more time/money. (2pts)
 
-In conclusion, this paper was an exploration of the data that hoped to illuminate the relationship between foreign-policy preferences and US provision of foreign aid. A difference in differences appproach treated the the commitment to providing any amount of aid as a treatment condition and analyzed the effect of this condition on the foreign policy alignment of a coutry with the US. My finding were ultimately mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe even a statistically significant result as casual.A second analysis that pooled all avaible data and treated it as a cross-section analysis of the effect of aid, provided simiarly suggestive but inconclusive results that were no statistically significant. Thus, evidence for my hypothesis is weak, and I can not rule with any interesting level of probability that the result I observed are due to random chance. 
+In conclusion, this paper was an exploration of the data that hoped to illuminate the relationship between foreign-policy preferences and US provision of foreign aid. A difference in differences approach treated the the commitment to providing any amount of aid as a treatment condition and analyzed the effect of this condition on the foreign policy alignment of a country with the US. My finding were ultimately mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe even a statistically significant result as casual.A second analysis that pooled all available data and treated it as a cross-section analysis of the effect of aid, provided simiarly suggestive but inconclusive results that were no statistically significant. Thus, evidence for my hypothesis is weak, and I can not rule with any interesting level of probability that the result I observed are due to random chance. 
 
-While this paper was unable to demonstrate statistically significant evidence for the hypothesis it shows some promise as a project for further exploration. There are ample opportunities to improve on this anlysis. Among them are threats to the inference, namely confounding varibales that are not being controlled for in any of the analysis that I performed. Anohter is that while the data set that was used for my independent variable is detailed, it is still the limiting factor in the range of sessions that I was able to analyze. This missing data kept me from including in my analysis the exiting state-preference data on the first 28 sessions of the United Nations. Similarly one important thing to note about the use of my dependent variable is that for all the virtures of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, their estimates give no directional relationship. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. The data and approach that I used for my dependent variable is mute on the point of just how two countries arrived at the new distance of their preference - it does not rule out any combination of both donor and recepeint chaning their preferences.If I were to have more time to perform this analysis, the most fruitful addition would be to identify and include data on possible confounders and to include this in a multi-variable regression. It is possible that the inclusion of such variables in my regression anlysis might just have produce a substantively similar difference in means as I found in this paper, but one that would display a statistical significance. 
+While this paper was unable to demonstrate statistically significant evidence for the hypothesis it shows some promise as a project for further exploration. There are ample opportunities to improve on this anlysis. Among them are threats to the inference, namely confounding varibales that are not being controlled for in any of the analysis that I performed. Another is that while the data set that was used for my independent variable is detailed, it is still the limiting factor in the range of sessions that I was able to analyze. This missing data kept me from including in my analysis the exiting state-preference data on the first 28 sessions of the United Nations. Similarly one important thing to note about the use of my dependent variable is that for all the virtures of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, their estimates give no directional relationship. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. The data and approach that I used for my dependent variable is mute on the point of just how two countries arrived at the new distance of their preference - it does not rule out any combination of both donor and recipient changing their preferences.If I were to have more time to perform this analysis, the most fruitful addition would be to identify and include data on possible confounders and to include this in a multi-variable regression. It is possible that the inclusion of such variables in my regression anlysis might just have produce a substantively similar difference in means as I found in this paper, but one that would display a statistical significance. 
+
+## Works Cited
+
 
 
