@@ -125,12 +125,13 @@ aid_us <- aid_us |> mutate(year_match = year + 1)
 
 ```
 
-```{r testing_name_conversion, include = FALSE}
+```{r testing_name_conversion, eval = FALSE}
 ## Testing Names, there are no names that are ambiguously coded for COW C that show up in the UN voting data anyway, so there are no errors for COW N either 
 unique(aid_us_test$recipient)
 unique_names <- unique(ideal$Countryname) ## Possible problem  using ideal
 unique_names <- enframe(unique_names)
-View(unique_names)
+
+
 cart|> filter(Countryname == "Serbia")
 
 
@@ -163,7 +164,7 @@ ideal_aid<- ideal_aid |>
 ideal_aid<- ideal_aid |>
   mutate(committed_millions = committed/ 1000000)
 
-View(ideal_aid)
+
 
 ## Adding groups for aid determination
 ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0, 1, 0),
@@ -207,11 +208,36 @@ My dependent variable, `change_one_before`, is calculated from estimated measure
 There are a two steps to calculating my dependent variable `change_one_before`. First, I had to calculate a measure of the alignment of state preference between a given country and the US for a given session.  The variable `distance_abs` is a measure of the alignment of a given country  with the US in a given session, arrived at by subtracting the value of the a given countries ideal-point estimate for a particular session from the USA's ideal-point estimate for that same session, and finally taking the absolute value. Second, I use this `distance_abs` variable to calculate a measure of how a  countries preference alignment with the US has changed from the past session to the current session. Thus, my dependent variable `change_distance_one`, for a given country in session n is calculated by subtracting the `distance_abs`of session n from the `distance_abs` value for that country in session n-1.
 
 Data for my independent variable, `treatment_any` comes from  AidData’s Core Research Release Version 3.0. This variable is a binary variable that is calculated from AidCores aggregated data (but also, they provide disaggreated data that is coded much more detail) on the amount of bilateral aid that a country reports that they committed to giving another country. This includes aid that was reported from various sources and is given in constant ($USD for 2011) dollars, and in million to allow for time-series analysis. This raw data is reported under the variable `commitment_millions`. This data is also reported at a recipient-year level, meaning that it provides the amount that the United State's committed to a given state in a given year. I follow the practice of assuming that if a country didn't report aid to  a country in a given year then the commitment of aid for that year was in fact zero. I also take a commitment to providing aid as a sufficient variable for analysis though there might be some discrepancy for aid that actually is paid out and aid that is committed, and thus some room for further analysis of aid actually delivered as the treatment condition.
-```{r plot_dependent, include = FALSE}
+
+
+```{r plot_dependent}
+
+
+change_one_sd <- sd(ideal_treat_fil$change_one_before, na.rm = TRUE)
+mean_dep<- mean(ideal_treat_fil$change_one_before, na.rm = TRUE)
+
+
+dep_plot<- ideal_treat_fil|>
+  ggplot(mapping = aes(x = change_one_before))+
+  geom_histogram(binwidth = .07)+
+  labs(title = "Figure One: Distribution of Dependent Variable",
+       subtitle = "All included",
+       x = "Change in alignment with USA from Previous Year, `change_one_before`",
+       y = "Count")+
+  geom_vline( xintercept = mean_dep)+
+  geom_vline( xintercept = change_one_sd*2)+
+  geom_vline( xintercept = change_one_sd*(-2) )
+  
+```
+
+
+
+
 dep_plot<- ideal_treat_fil|>
   ggplot(mapping = aes(x = change_one_before))+
   geom_histogram(color = "orange", 
-                 fill = "orange")+
+                 fill = "orange",
+                 binwidth = .07)+
   labs(title = "Figure One: Distribution of Dependent Variable",
        subtitle = "All included",
        x = "Change in alignment with USA from Previous Year, `change_one_before`",
@@ -220,16 +246,13 @@ dep_plot<- ideal_treat_fil|>
   geom_vline( xintercept = change_one_sd*2)+
   geom_vline( xintercept = change_one_sd*(-2) )
 
-change_one_sd <- sd(ideal_treat_fil$change_one_before, na.rm = TRUE)
-mean_dep<- mean(ideal_treat_fil$change_one_before, na.rm = TRUE)
-  
-```
 
-If we look at all the distribution of all `change_one_before` for all session, it appears that the variable follows a normally distribution, centered at about `r mean_dep`, with a standard deviation of `r change_one_sd`. 
+
+If we look at all the distribution of all `change_one_before` for all session, it appears that the variable follows a normally distribution, centered at about `r mean_dep`, with a standard deviation of `r change_one_sd` . 
 
 `r dep_plot`
 
-My research design employs a differences-in-differences approach. I treat the the commitment of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. My independent variable is `treatment_any` and my depended varibale is `change_one_before`. Both of my variables are determined for country-session pairs.
+My research design employs a differences-in-differences approach. I treat the the commitment of aid as the treatment condition and want to investigate its effect on the alignment of state preferences. My independent variable is `treatment_any` and my depended variable is `change_one_before`. Both of my variables are determined for country-session pairs.
 
 My independent variable is `treatment_any` is a binary variable describing whether or not a country was the recipient of any non-zero amount of US foreign aid in the preceding year. The control is no aid commitment reported as `0`, and receiving aid is the treatment reported as `1`.  Said differently, I lag the treatment variable to make it so that for a given session n, a  country is counted as being in the control group if and only if it received a commitment for aid in the the year before that session. Lagging the time of the of the commitment by one year is to provide the opportunity to observe an effect of treatment, whose effect's we might miss if we weren't to lag treatment. 
 
@@ -239,7 +262,8 @@ To calculate the difference in differences we can then first take the average ch
 
 I work under the assumption that in a given session all countries will experience, on average parallel trends through time. Thus, if we observe a decrease in the distance from the USA for countries that are in the treatment group that is relatively higher than the decrease that we observe for those in the treatment, this would be evidence for my hypothesis. That is a statistically significant negative ATE would be evidence for my hypothesis. 
 
-## Results--------- plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
+## Results
+plot of main analysis + regression output + 2-3 paragraphs of description and interpretation of the plots and regression (including interpreting the main coefficient of interest and describing if it is statistically significant and if we should interpret it causally). This section could be longer if you choose to include additional analyses. (8pts)
 In summary my findings through the proposed difference in difference approach are rather mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe any of my suggestions as casual inferences. 
 
 My first and primary analysis used a difference in differences approach in order to calculate the average treatment effect. In order to perform this anlysis I run a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yields two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is `r intercept` indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
@@ -255,7 +279,9 @@ This regression analysis reflects the same underlying approach as the difference
 
 Whatever the results of my anlysis could have been, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship btween countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy preference to the countries to which it provides aid.
 
-### Main Analysis
+## Main Analysis
+
+
 ```{r reg_main, include = FALSE}
 
 ## Creating table for ATE in a given session
@@ -338,14 +364,9 @@ Because of the failure of my primary analysis to produce a statistically signifi
 
 To test for this hypothesis I used I simply too pooled all observation of changes in the alignment with USA. Whereas before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US with no respect to session. Thus I get a distribution for all observed changes that looks like this `r second_dist`.
 
-I ran two regression models on this data. In the first I use the same treatment variable from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in__  Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coefficient is the coefficient of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `r -1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `r main_coef_p`, this coefficient is also not statistically significant.
+I ran two regression models on this data. In the first `r fit_treat_all_formated` I use the same treatment variable from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in__  Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coefficient is the coefficient of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `r -1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `r main_coef_p`, this coefficient is also not statistically significant.
 
-The second regression I run includes a two categorical variables as predictors, this time in attempt to see if there is any difference between the amount of aid that is provided. In this regresion I now include two different catergorical predictors. The first being `treatment_middle` for when a country receives a commitment between 1 and 100 million, and `treatment_high` for when a country receives a commitment greater than 100 million dollars. This regression yields a couple things of note, first that each of the coefficients of interest are negative, in line with my expectations about the decrease in distance, or said differently the increase in foreign-policy alignment. 
-
-
-provide some evidence for the plausibilty of my first hypothesis and of my second hypoothesis. 
-
-Running the test on the s
+The second regression `r fit_treat_all_multi_formated` I run includes a two categorical variables as predictors, this time in attempt to see if there is any difference between the amount of aid that is provided. In this regression I now include two different categorical predictors. The first being `treatment_middle` for when a country receives a commitment between 1 and 100 million, and `treatment_high` for when a country receives a commitment greater than 100 million dollars. This regression yields a couple things of note, first that each of the coefficients of interest are negative, in line with my expectations about the decrease in distance, or said differently the increase in foreign-policy alignment. This might be construed of evidence for my first hypothesis-- that there is some decrease in distance when the US commit aid. The coeficinets for both of these predictors are bigger in magnitude than that in my firt regresssion analysis. It might also be construed as support for my second hypothesis, as it was seen that perhaps we just needed to label as treatment only higher amount of committed aid in order to see a more pronounced correlation with a foreign policy preference alignment. The coefficient on the `treatement_middle` predictor is particularly of note. For a country that receives between  1 and 100 million dollars this model predicts an average deacrease in distance of 0.09632 points, and this prediction is the closest my analysis has come to statistical significance, with a p-value of 0.190. 
 
 
 
@@ -360,17 +381,26 @@ second_dist<- ideal_treat_fil|>
 
 ## Using multiple variables, multiple levels of aid
 fit_treat_all <- lm (change_one_before ~ treatment_any, data = ideal_treat_fil)
-summary(fit_treat_all)
 
 fit_treat_all_multi <- lm (change_one_before ~ treat_middle + treat_high, data = ideal_treat_fil)
-summary(fit_treat_all_multi)
+
+## Formatted 
+fit_treat_all_formated <- modelsummary::modelsummary(fit_treat_all,
+statistic = c("s.e. = {std.error}",
+"p = {p.value}"),
+gof_map = c("nobs", "r.squared", "adj.r.squared"))
+
+fit_treat_all_multi_formated<- modelsummary::modelsummary(fit_treat_all_multi,
+statistic = c("s.e. = {std.error}",
+"p = {p.value}"),
+gof_map = c("nobs", "r.squared", "adj.r.squared"))
 ```
 
 
 
 ## Conclusion a brief (one paragraph) concluding section that summarizes your results, assesses the extent to which you find support for your hypothesis, describes limitations of your analysis and threats to inference, and states how your analysis could be improved (e.g., improved data that would be useful to collect).1 paragraph (i) summarizing results and assessing the extent to which you find support for your hypothesis; (ii) describing limitations of the analysis and threats to inference (missing data, confounding, etc), and stating how you could improve your analysis if you had more time/money. (2pts)
 
-In conclusion, this paper was an exploration of the data that hoped to illuminate the relationship between foreign-policy preferences and US provision of foreign aid. A difference in differences appproach treated the the commitment to providing any amount of aid as a treatment condition and analyzed the effect of this condition on the foreign policy alignment of a coutry with the US. My finding were ultimately mixed and inconclusive. While the regresssion that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe even a statistically signifcant result as casual.A second analysis that pooled all avaible data and treated it as a cross-section analysis of the effect of aid, provided simiarly suggestive but inconclusive results that were no statistically significant. Thus, evidence for my hyppothesis is weak, and I can not rule with any interesting level of probability that the result I obesrved are due to random chance. 
+In conclusion, this paper was an exploration of the data that hoped to illuminate the relationship between foreign-policy preferences and US provision of foreign aid. A difference in differences appproach treated the the commitment to providing any amount of aid as a treatment condition and analyzed the effect of this condition on the foreign policy alignment of a coutry with the US. My finding were ultimately mixed and inconclusive. While the regression that I arrive it does predict that on average the commitment of any amount of bilateral aid from the US to another country is correlated with a foreign-policy preference convergence between the US and that country, this prediction is not statistically significant and care should be taken to not construe even a statistically significant result as casual.A second analysis that pooled all avaible data and treated it as a cross-section analysis of the effect of aid, provided simiarly suggestive but inconclusive results that were no statistically significant. Thus, evidence for my hypothesis is weak, and I can not rule with any interesting level of probability that the result I observed are due to random chance. 
 
 While this paper was unable to demonstrate statistically significant evidence for the hypothesis it shows some promise as a project for further exploration. There are ample opportunities to improve on this anlysis. Among them are threats to the inference, namely confounding varibales that are not being controlled for in any of the analysis that I performed. Anohter is that while the data set that was used for my independent variable is detailed, it is still the limiting factor in the range of sessions that I was able to analyze. This missing data kept me from including in my analysis the exiting state-preference data on the first 28 sessions of the United Nations. Similarly one important thing to note about the use of my dependent variable is that for all the virtures of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, their estimates give no directional relationship. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. The data and approach that I used for my dependent variable is mute on the point of just how two countries arrived at the new distance of their preference - it does not rule out any combination of both donor and recepeint chaning their preferences.If I were to have more time to perform this analysis, the most fruitful addition would be to identify and include data on possible confounders and to include this in a multi-variable regression. It is possible that the inclusion of such variables in my regression anlysis might just have produce a substantively similar difference in means as I found in this paper, but one that would display a statistical significance. 
 
