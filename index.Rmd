@@ -171,7 +171,9 @@ ideal_treat<- ideal_aid|> mutate(treatment_any =  if_else(committed_millions > 0
                                  treat_middle = if_else( (committed_millions > 1) & (committed_millions <= 100),1,0),
                                  treat_high = if_else(committed_millions > 100, 1, 0),
                                  treat_bil = if_else(committed_millions > 1000, 1, 0),
-                                 treat_sig = if_else(committed_millions > 10, 1, 0)
+                                 treat_sig = if_else(committed_millions > 10, 1, 0),
+                                 treatment_middle_up = if_else( (committed_millions > 1), 1 , 0),
+                                 treatment_high_up = if_else(committed_millions > 100, 1, 0),
                                 )
 
 ## Sub-setting to the data that we will actually use,  
@@ -249,12 +251,12 @@ For for countries in the treatment group the model provides a more clear predict
 `r fit_ate_formated`
 `r avg_ate`
 
-This regression analysis reflects the same underlying approach as the difference in differences that can be calculated as in the table below. In this chart, I display the change in the distance between the US and other countries from the previous session to the current session. This table lists the data on which I ran the above  regression. Table __ summarizes the insights from this table by taking the averages across the groups, across sessions and fining the difference to estimate the averagge treatment effect. 
+This regression analysis reflects the same underlying approach as the difference in differences that can be calculated as in the table below. In this chart, I display the change in the distance between the US and other countries from the previous session to the current session. This table lists the data on which I ran the above  regression. Table __ summarizes the insights from this table by taking the averages across the groups, across sessions and fining the difference to estimate the average treatment effect. 
 
-Whatever the results of my anlysis could have been, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship btween countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy prference to the countries to which it provides aid.
+Whatever the results of my anlysis could have been, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship btween countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy preference to the countries to which it provides aid.
 
 ### Main Analysis
-```{r}
+```{r reg_main, include = FALSE}
 
 ## Creating table for ATE in a given session
 ate_table <-ideal_treat|> 
@@ -273,8 +275,6 @@ table_formatted<- knitr::kable(ate_table_names)
 
 
 avg_ate <- mean(ate_table_names$`Session ATE`)
-
-
 
 
 ## Making ATE table longer, for visualization
@@ -322,17 +322,31 @@ statistic = c("s.e. = {std.error}",
 "p = {p.value}"),
 gof_map = c("nobs", "r.squared", "adj.r.squared"))
 
+
 ```
 
 
+
+
+
+
+
+
+
 ##Secondary Analysis
-Because of the failure of my primary analysis to produce a statistically significant result, I performed this second analysis, in part to speak to the second hypothesis that I posed. I was interested to see if higher amounts of aid were what we should be focusing on in analyzing the relationships between state preference and aid commitments. In this section I simply too pooled all observation of changes in. Where as before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US with no respect to session. 
+Because of the failure of my primary analysis to produce a statistically significant result, I performed this second analysis, in part to speak to the second hypothesis that I posed. I hypothesizes that higher amounts of aid could be correlated with an increased probablity of alignment with the US. Should we focus on analyzing the relationships between state preference and aid commitments, does a clear statistically significant pattern emerge for countries that are committed higher amounts of aid.
 
-Thus I get a distribution for all observed changes that looks like this `r second_dist`.
+To test for this hypothesis I used I simply too pooled all observation of changes in the alignment with USA. Whereas before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US with no respect to session. Thus I get a distribution for all observed changes that looks like this `r second_dist`.
 
-I ran two regression models on this data. In the first I use the same treatment varible from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in __. Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coeficient is the coeficint of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `r -1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `r main_coef_p`, this coefficient is also not statistically significant. 
+I ran two regression models on this data. In the first I use the same treatment variable from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in__  Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coefficient is the coefficient of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `r -1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `r main_coef_p`, this coefficient is also not statistically significant.
 
-The second regression I run includes a few more categorical
+The second regression I run includes a two categorical variables as predictors, this time in attempt to see if there is any difference between the amount of aid that is provided. In this regresion I now include two different catergorical predictors. The first being `treatment_middle` for when a country receives a commitment between 1 and 100 million, and `treatment_high` for when a country receives a commitment greater than 100 million dollars. This regression yields a couple things of note, first that each of the coefficients of interest are negative, in line with my expectations about the decrease in distance, or said differently the increase in foreign-policy alignment. 
+
+
+provide some evidence for the plausibilty of my first hypothesis and of my second hypoothesis. 
+
+Running the test on the s
+
 
 
 ```{r}
@@ -348,11 +362,8 @@ second_dist<- ideal_treat_fil|>
 fit_treat_all <- lm (change_one_before ~ treatment_any, data = ideal_treat_fil)
 summary(fit_treat_all)
 
-fit_treat_all_multi <- lm (change_one_before ~ treatment_any + treat_some + treat_middle + treat_high, data = ideal_treat_fil)
+fit_treat_all_multi <- lm (change_one_before ~ treat_middle + treat_high, data = ideal_treat_fil)
 summary(fit_treat_all_multi)
-
-
-
 ```
 
 
