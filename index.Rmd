@@ -327,58 +327,42 @@ Table one below displays the data that I use in my main analysis, data that I ca
 table_formatted
 ```
 
-Figure two below displays a plotted visual representation of data from the above table. We can visualize the average ATE for any given session as the y-value of the treatement point minus the y-value of the control point. 
+Figure two below displays a plotted visual representation of data from the above table. We can visualize the average ATE for any given session as the y-value of the treatment point minus the y-value of the control point. 
 
 
 ```{r , layout="l-body-outset", echo = FALSE}
 ate_table_longer_point
 ```
 
-My primary analysis, that is displayed in the figure above, used a difference in differences approach in order to calculate the average treatment effect. In order to perform this analysis I ran a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yielded two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is  indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is imporant to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
+My primary analysis, that is displayed in the figure three below, used a difference in differences approach in order to calculate the average treatment effect. In order to perform this analysis I ran a regression analysis  on the treatment as a categorical predictor of the `change_one_before`. This regression yielded two coefficients, one is an intercept which represents the models prediction for the baseline group, that is the control group. The value of the intercept is  indicating that on average countries in the control were slighly more likely to increase their distance from the US. However it is important to keep in mind that For countries in the control this model is rather uninformative, this intercept coefficient is not statistically significant, and in fact is highly arbitrary. For countries in the control this model is rather uninformative.  
 
-For for countries in the treatment group the model provides a more clear prediction. The main coefficient of interest is equivalent to the average treatment effect that is reported in table __.  This coefficient is `main_coef`. It is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `-1*main_coef`. Recall, this decrease is an indication of increaed alignment. However, with a p-value of `main_coef_p`, this coeficient is also not statistically significant. Thus, with this approach I cannot reject the null hypothesis of any observed difference being due to pure chance. However, in the following section I perform another test, but it too is not statistically significant and cannot be used to derive any causal inferences. 
+For for countries in the treatment group the model provides a more clear prediction. The main coefficient of interest is equivalent to the average treatment effect that is reported in table below. This coefficient is -0.0115568. It is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately 0.0115568. Recall, this decrease is an indication of increased alignment. However, with a p-value of 0.5391344, this coefficient is also not statistically significant. Thus, with this approach I cannot reject the null hypothesis of any observed difference being due to pure chance. However, in the following section I perform another test, but it too is not statistically significant and cannot be used to derive any causal inferences. 
 
-Below is a table summarizing these coeficients and statistical significance of these coeficients.
+
+```{r ate_table_longer_num_plot, layout="l-body-outset", echo = FALSE}
+ate_table_longer_num_plot
+```
+
+
+Below is a table summarizing these coefficients and statistical significance of these coeficients.
 ```{r , layout="l-body-outset", echo = FALSE}
 fit_ate_formated
 ```
 
 
-This regression analysis reflects the same underlying approach as the difference in differences that can be calculated as in the table below. In this chart, I display the change in the distance between the US and other countries from the previous session to the current session. This table lists the data on which I ran the above  regression. Table __ summarizes the insights from this table by taking the averages across the groups, across sessions and fining the difference to estimate the average treatment effect. 
-
-Whatever the results of my anlysis could have been, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship btween countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy preference to the countries to which it provides aid.
-
-
-
-
-
-
-
-
-
-
-
-
+Whatever the results of my analysis might have been if I used a more robust methodology, there is one important thing to note about the use of my dependent variable that limits any causal interpretation that we might derives from its use. For  all the virtues of the ideal-point estimates that Dreher et al provide, when used as I have used them, to compare the distance or alignment of two countries, these estimates of state alignment of state preference can  give no directional relationship between countries. That is to say,  we cannot conclude with certainty, even from a statistically significant result, that the provision of US aid is causing the recipient of aid  to move closer to the foreign policy preference of the US. It just as well be that the US is moving closer in foreign policy preference to the countries to which it provides aid.
 
 ## 5 Secondary Analysis
-Because of the failure of my primary analysis to produce a statistically significant result, I performed this second analysis, in part to speak to the second hypothesis that I posed. I hypothesizes that higher amounts of aid could be correlated with an increased probablity of alignment with the US. Should we focus on analyzing the relationships between state preference and aid commitments, does a clear statistically significant pattern emerge for countries that are committed higher amounts of aid.
-
-To test for this hypothesis I used I simply too pooled all observation of changes in the alignment with USA. Whereas before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US with no respect to session. Thus I get a distribution for all observed changes that looks like this `second_dist`.
-
-I ran two regression models on this data. In the first `fit_treat_all_formated` I use the same treatment variable from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in__  Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coefficient is the coefficient of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `-1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `main_coef_p`, this coefficient is also not statistically significant.
-
-The second regression `fit_treat_all_multi_formated` I run includes a two categorical variables as predictors, this time in attempt to see if there is any difference between the amount of aid that is provided. In this regression I now include two different categorical predictors. The first being `treatment_middle` for when a country receives a commitment between 1 and 100 million, and `treatment_high` for when a country receives a commitment greater than 100 million dollars. This regression yields a couple things of note, first that each of the coefficients of interest are negative, in line with my expectations about the decrease in distance, or said differently the increase in foreign-policy alignment. This might be construed of evidence for my first hypothesis-- that there is some decrease in distance when the US commit aid. The coefficients for both of these predictors are bigger in magnitude than that in my firt regresssion analysis. It might also be construed as support for my second hypothesis, as it was seen that perhaps we just needed to label as treatment only higher amount of committed aid in order to see a more pronounced correlation with a foreign policy preference alignment. The coefficient on the `treatement_middle` predictor is particularly of note. For a country that receives between  1 and 100 million dollars this model predicts an average decrease in distance of 0.09632 points, and this prediction is the closest my analysis has come to statistical significance, with a p-value of 0.190. 
-
-
-
 ```{r dis_chart_second, include = FALSE}
 ##Distribution Chart for all observed country changes in the period of interest
 second_dist<- ideal_treat_fil|> 
-  mutate(treatment_any = as.factor(treatment_any))|>
+  mutate(Treatment = as.factor(treatment_any))|>
   ggplot(mapping = aes(x = change_one_before,
-                        fill = treatment_any,
-                        color =  treatment_any))+
-  geom_histogram()
+                        fill = Treatment,
+                        color =  Treatment))+
+  geom_histogram()+
+  labs(title = "Figure Four: Distribution of Dependent Variable for both Treatment and Control Groups",
+       x = "Change in Foreign Policy alignment from previous year")
 
 ## Using multiple variables, multiple levels of aid
 fit_treat_all <- lm (change_one_before ~ treatment_any, data = ideal_treat_fil)
@@ -397,6 +381,26 @@ statistic = c("s.e. = {std.error}",
 gof_map = c("nobs", "r.squared", "adj.r.squared"))
 ```
 
+Because of the failure of my primary analysis to produce a statistically significant result, I performed this second analysis, in part to speak to the second hypothesis that I posed. I hypothesizes that higher amounts of aid could be correlated with an increased probability of alignment with the US. Should we focus on analyzing the relationships between state preference and aid commitments, does a clear statistically significant pattern emerge for countries that are committed higher amounts of aid? 
+
+To test for this hypothesis I used I simply too pooled all observation of changes in the alignment with USA. Whereas before I was comparing a difference in difference among treatment and control for a given session, I now attempted to compare the average ATE by simply pooling all data on the changes in alignment with the US with no respect to session. Thus I get a distribution for all observed changes that looks like this `second_dist`.
+
+```{r second_dist, layout="l-body-outset", echo = FALSE}
+second_dist
+```
+
+
+I ran two regression models on this data. In the first, displayed below I use the same treatment variable from my main analysis as a categorical predictor of the `change_one_before`. This regression yields two coefficients, whose values and corresponding p-values are summarized in the table below. Again we see that for countries in the control this model is rather uninformative, as thes intercept coefficient is not statistically significant. The slope coefficient is the coefficient of interest and again is negative, thus predicting that for a country that has received any amount of aid we should expect to see the distance between the ideal points of those two counties to decrease by approximately `-1*main_coef`. Recall, this decrease is an indication of increased alignment in foreign policy. However, with a p-value of `main_coef_p`, this coefficient is also not statistically significant.
+
+```{r fit_treat_all_formated, layout="l-body-outset", echo = FALSE}
+fit_treat_all_formated
+```
+
+In the second regression, displayed below, I run includes a two categorical variables as predictors, this time in attempt to see if there is any difference between the amount of aid that is provided. In this regression I now include two different categorical predictors. The first being `treatment_middle` for when a country receives a commitment between 1 and 100 million, and `treatment_high` for when a country receives a commitment greater than 100 million dollars. This regression yields a couple things of note, first that each of the coefficients of interest are negative, in line with my expectations about the decrease in distance, or said differently the increase in foreign-policy alignment. This might be construed of evidence for my first hypothesis-- that there is some decrease in distance when the US commit aid. The coefficients for both of these predictors are bigger in magnitude than that in my firt regresssion analysis. It might also be construed as support for my second hypothesis, as it was seen that perhaps we just needed to label as treatment only higher amount of committed aid in order to see a more pronounced correlation with a foreign policy preference alignment. The coefficient on the `treatement_middle` predictor is particularly of note. For a country that receives between  1 and 100 million dollars this model predicts an average decrease in distance of 0.09632 points, and this prediction is the closest my analysis has come to statistical significance, with a p-value of 0.190. 
+
+```{r fit_treat_all_multi_formated, layout="l-body-outset", echo = FALSE}
+fit_treat_all_multi_formated
+```
 
 
 ## 6 Conclusion 
