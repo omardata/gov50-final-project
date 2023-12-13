@@ -428,3 +428,9 @@ AidData. 2016. AidDataCore_ResearchRelease_Level1_v3.0 Research Releases
 dataset. Williamsburg, VA : AidData. Accessed on [date]. http://aiddata.org/researchdatasets
 .
 
+# Code Printout 
+
+```{r print-code, ref.label=knitr::all_labels(), echo = TRUE, eval=FALSE}
+
+```
+
